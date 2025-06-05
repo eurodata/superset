@@ -30,7 +30,7 @@ export interface NumberFormatterConfig {
   isInvalid?: boolean;
 }
 
-const NON_BREAKING_SPACE = "\u00A0";
+const NON_BREAKING_SPACE = '\u00A0';
 
 // Use type augmentation to indicate that
 // an instance of NumberFormatter is also a function
@@ -79,9 +79,9 @@ class NumberFormatter extends ExtensibleFunction {
     let formattedValue = this.formatFunc(value);
     const absoluteNumber: number = Math.abs(value);
     if (absoluteNumber >= 1000 && absoluteNumber < 1000000) {
-      formattedValue = formattedValue.replace('k', NON_BREAKING_SPACE+'Tsd');
+      formattedValue = formattedValue.replace('k', `${NON_BREAKING_SPACE}Tsd`);
     } else if (absoluteNumber >= 1000000 && absoluteNumber < 1000000000) {
-      formattedValue = formattedValue.replace('M', NON_BREAKING_SPACE+'Mio');
+      formattedValue = formattedValue.replace('M', `${NON_BREAKING_SPACE}Mio`);
     }
     return formattedValue;
   }
