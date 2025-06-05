@@ -469,7 +469,10 @@ describe('Drill to detail modal', () => {
 
           // checking the filter
           cy.getBySel('filter-val').should('contain', 'boy');
-          cy.getBySel('row-count-label').should('contain', '39.2\u00A0Tsd rows');
+          cy.getBySel('row-count-label').should(
+            'contain',
+            '39.2\u00A0Tsd rows',
+          );
           cy.get('.ant-pagination-item')
             .should('have.length', 6)
             .then($pages => {
@@ -480,7 +483,10 @@ describe('Drill to detail modal', () => {
           // close the filter and test that data was reloaded
           cy.getBySel('filter-col').find("[aria-label='close']").click();
           cy.wait('@samples');
-          cy.getBySel('row-count-label').should('contain', '75.7\u00A0Tsd rows');
+          cy.getBySel('row-count-label').should(
+            'contain',
+            '75.7\u00A0Tsd rows',
+          );
           cy.get('.ant-pagination-item-active').should('contain', '1');
           cy.get('.ant-pagination-item')
             .should('have.length', 6)
