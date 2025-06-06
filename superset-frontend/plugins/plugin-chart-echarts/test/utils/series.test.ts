@@ -628,7 +628,7 @@ describe('formatSeriesName', () => {
 
   it('should use numberFormatter for numeric values when formatter is provided', () => {
     expect(formatSeriesName(12345678.9, { numberFormatter })).toEqual(
-      '12.3Mio',
+      '12.3\u00A0Mio',
     );
   });
 

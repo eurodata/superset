@@ -121,22 +121,22 @@ it('CurrencyFormatter:format', () => {
   expect(currencyFormatterWithPrefix(VALUE)).toEqual(
     currencyFormatterWithPrefix.format(VALUE),
   );
-  expect(currencyFormatterWithPrefix(VALUE)).toEqual('$ 56.1Mio');
+  expect(currencyFormatterWithPrefix(VALUE)).toEqual('$ 56.1\u00A0Mio');
 
   const currencyFormatterWithSuffix = new CurrencyFormatter({
     currency: { symbol: 'USD', symbolPosition: 'suffix' },
   });
-  expect(currencyFormatterWithSuffix(VALUE)).toEqual('56.1Mio $');
+  expect(currencyFormatterWithSuffix(VALUE)).toEqual('56.1\u00A0Mio $');
 
   const currencyFormatterWithoutPosition = new CurrencyFormatter({
     // @ts-ignore
     currency: { symbol: 'USD' },
   });
-  expect(currencyFormatterWithoutPosition(VALUE)).toEqual('56.1Mio $');
+  expect(currencyFormatterWithoutPosition(VALUE)).toEqual('56.1\u00A0Mio $');
 
   // @ts-ignore
   const currencyFormatterWithoutCurrency = new CurrencyFormatter({});
-  expect(currencyFormatterWithoutCurrency(VALUE)).toEqual('56.1Mio');
+  expect(currencyFormatterWithoutCurrency(VALUE)).toEqual('56.1\u00A0Mio');
 
   const currencyFormatterWithCustomD3 = new CurrencyFormatter({
     currency: { symbol: 'USD', symbolPosition: 'prefix' },
