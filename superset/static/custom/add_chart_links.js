@@ -16,9 +16,7 @@ const observer = new MutationObserver(() => {
       icon.style.cursor = 'pointer';
 
       icon.innerHTML = `
-        <path d="M13,16h2v2H9V16h2V12H10V10h3ZM12,8.25A1.25,1.25,0,1,0,10.75,7,
-        1.25,1.25,0,0,0,12,8.25ZM22,12A10,10,0,1,1,12,2,10,10,0,0,1,22,12Zm-2,
-        0a8,8,0,1,0-8,8A8.0091,8.0091,0,0,0,20,12Z"/>
+        <path xmlns="http://www.w3.org/2000/svg" d="M16,10c0,2.5-3,3.349-3,5H11c0-2.633,3-3,3-5a2,2,0,0,0-4,0H8a4,4,0,0,1,8,0Zm6,2A10,10,0,1,1,12,2,10.0152,10.0152,0,0,1,22,12Zm-2,0a8,8,0,1,0-8,8A7.9849,7.9849,0,0,0,20,12Zm-8,3.75A1.25,1.25,0,1,0,13.25,17,1.25,1.25,0,0,0,12,15.75Z"/>
       `;
 
       icon.addEventListener('click', () => {
@@ -26,7 +24,7 @@ const observer = new MutationObserver(() => {
         window.open(link, '_blank');
       });
 
-      headerControls.appendChild(icon);
+      headerControls.insertBefore(icon, headerControls.firstChild);
     });
   }
 });
