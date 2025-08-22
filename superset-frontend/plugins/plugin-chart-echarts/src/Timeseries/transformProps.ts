@@ -204,6 +204,7 @@ export default function transformProps(
     }
     return { ...acc, [entry[0]]: entry[1] };
   }, {});
+
   const colorScale = CategoricalColorNamespace.getScale(colorScheme as string);
   const rebasedData = rebaseForecastDatum(data, verboseMap);
   let xAxisLabel = getXAxisLabel(chartProps.rawFormData) as string;
