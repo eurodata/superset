@@ -204,9 +204,10 @@ export default function transformProps(
     }
     return { ...acc, [entry[0]]: entry[1] };
   }, {});
-  
+
   const timeCompareRegex = /^(.*)__([0-9]+ (?:day|week|year)s? ago)$/;
-  const timeCompareRegexWithDimensions = /^([0-9]+ (?:day|week|year)s? ago),(.*)$/;
+  const timeCompareRegexWithDimensions =
+    /^([0-9]+ (?:day|week|year)s? ago),(.*)$/;
 
   Object.keys(labelMap).forEach(key => {
     const match = key.match(timeCompareRegex);
