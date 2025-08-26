@@ -70,6 +70,7 @@ import {
   getColtypesMapping,
   getLegendProps,
   getMinAndMaxFromBounds,
+  getTranslatedTimeCompare,
 } from '../utils/series';
 import {
   extractAnnotationLabels,
@@ -105,7 +106,6 @@ import {
   getXAxisFormatter,
   getYAxisFormatter,
 } from '../utils/formatters';
-import { getTranslatedTimeCompare } from '../utils/series';
 
 export default function transformProps(
   chartProps: EchartsTimeseriesChartProps,
@@ -214,13 +214,13 @@ export default function transformProps(
     const match = key.match(timeCompareRegex);
     if (match) {
       const [, metric, timePart] = match;
-      let translatedTimePart = getTranslatedTimeCompare(timePart);
+      const translatedTimePart = getTranslatedTimeCompare(timePart);
       verboseMap[key] = `${metric} ${translatedTimePart}`;
     } else {
       const matchWithDimensions = key.match(timeCompareRegexWithDimensions);
       if (matchWithDimensions) {
         const [, timePart, dimensions] = matchWithDimensions;
-        let translatedTimePart = getTranslatedTimeCompare(timePart);
+        const translatedTimePart = getTranslatedTimeCompare(timePart);
         verboseMap[key] = `${translatedTimePart},${dimensions}`;
       }
     }
