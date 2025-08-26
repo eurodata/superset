@@ -70,6 +70,7 @@ import {
   getColtypesMapping,
   getLegendProps,
   getMinAndMaxFromBounds,
+  getTranslatedTimeCompare,
 } from '../utils/series';
 import {
   extractAnnotationLabels,
@@ -213,41 +214,13 @@ export default function transformProps(
     const match = key.match(timeCompareRegex);
     if (match) {
       const [, metric, timePart] = match;
-      let translatedTimePart;
-      switch (timePart) {
-        case '1 day ago':
-          translatedTimePart = 'Vortag';
-          break;
-        case '1 week ago':
-          translatedTimePart = 'Vorwoche';
-          break;
-        case '1 year ago':
-          translatedTimePart = 'Vorjahr';
-          break;
-        default:
-          translatedTimePart = t(timePart);
-          break;
-      }
+      const translatedTimePart = getTranslatedTimeCompare(timePart);
       verboseMap[key] = `${metric} ${translatedTimePart}`;
     } else {
       const matchWithDimensions = key.match(timeCompareRegexWithDimensions);
       if (matchWithDimensions) {
         const [, timePart, dimensions] = matchWithDimensions;
-        let translatedTimePart;
-        switch (timePart) {
-          case '1 day ago':
-            translatedTimePart = 'Vortag';
-            break;
-          case '1 week ago':
-            translatedTimePart = 'Vorwoche';
-            break;
-          case '1 year ago':
-            translatedTimePart = 'Vorjahr';
-            break;
-          default:
-            translatedTimePart = t(timePart);
-            break;
-        }
+        const translatedTimePart = getTranslatedTimeCompare(timePart);
         verboseMap[key] = `${translatedTimePart},${dimensions}`;
       }
     }

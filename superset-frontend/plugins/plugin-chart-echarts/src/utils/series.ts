@@ -32,6 +32,7 @@ import {
   SupersetTheme,
   TimeFormatter,
   ValueFormatter,
+  t,
 } from '@superset-ui/core';
 import { SortSeriesType } from '@superset-ui/chart-controls';
 import { format } from 'echarts/core';
@@ -630,12 +631,14 @@ export function getTimeCompareStackId(
   // Each timeCompare is its own stack so it doesn't stack on top of original ones
   return (
     timeCompare.find(value => {
+      const translatedTimeCompare = getTranslatedTimeCompare(value);
       if (typeof name === 'string') {
         // offset is represented as <offset>, group by list
         return (
           name.includes(`${value},`) ||
           // offset is represented as <metric>__<offset>
-          name.includes(`__${value}`)
+          name.includes(`__${value}`) ||
+          name.includes(translatedTimeCompare)
         );
       }
       return name?.toString().includes(value);
@@ -660,4 +663,23 @@ export function extractTooltipKeys(
     return forecastValue.map(s => s[TOOLTIP_SERIES_KEY]);
   }
   return [forecastValue[0][TOOLTIP_SERIES_KEY]];
+}
+
+export function getTranslatedTimeCompare(timeCompare: string) {
+  let translatedTimeCompare;
+  switch (timeCompare) {
+    case '1 day ago':
+      translatedTimeCompare = 'Vortag';
+      break;
+    case '1 week ago':
+      translatedTimeCompare = 'Vorwoche';
+      break;
+    case '1 year ago':
+      translatedTimeCompare = 'Vorjahr';
+      break;
+    default:
+      translatedTimeCompare = t(timeCompare);
+      break;
+  }
+  return translatedTimeCompare;
 }
