@@ -466,7 +466,7 @@ export default function transformProps(
       : String;
 
   const truncate = (value: string, maxLength: number) =>
-    value.length > maxLength ? value.slice(0, maxLength) + '...' : value;
+    value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
 
   const xAxisFormatter =
     xAxisDataType === GenericDataType.Temporal
