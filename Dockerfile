@@ -57,6 +57,9 @@ RUN npm run build-translation
 RUN rm /app/superset/translations/*/LC_MESSAGES/*.po
 RUN rm /app/superset/translations/messages.pot
 
+# Copy eurodata fork assets
+COPY --chown=superset:superset eurodata-extension /app/eurodata-extension
+
 ######################################################################
 # Final lean image...
 ######################################################################

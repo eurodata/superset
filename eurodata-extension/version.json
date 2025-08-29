@@ -1,0 +1,6 @@
+{
+    "organisation": "eurodata",
+    "component": "apache-superset-fork",
+    "fork-version": "eurodata-master: 4.1.3rc3.1",
+    "version": "4.1.3-eurodata-0.4"
+}
