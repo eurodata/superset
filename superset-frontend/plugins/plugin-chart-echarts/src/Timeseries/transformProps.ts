@@ -464,10 +464,14 @@ export default function transformProps(
     xAxisDataType === GenericDataType.Temporal
       ? getTooltipTimeFormatter(tooltipTimeFormat)
       : String;
+
+  const truncate = (value: string, maxLength: number) =>
+    value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
+
   const xAxisFormatter =
     xAxisDataType === GenericDataType.Temporal
       ? getXAxisFormatter(xAxisTimeFormat)
-      : String;
+      : (value: any) => truncate(String(value), 10);
 
   const {
     setDataMask = () => {},
