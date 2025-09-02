@@ -17,14 +17,16 @@
  * under the License.
  */
 
-import { FC, memo } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import {
   DataMaskStateWithId,
+  DataMaskWithId,
   FeatureFlag,
   isFeatureEnabled,
   JsonObject,
   styled,
   t,
+  fetchTimeRange,
 } from '@superset-ui/core';
 import Icons from 'src/components/Icons';
 import Loading from 'src/components/Loading';
@@ -36,6 +38,27 @@ import { HorizontalBarProps } from './types';
 import FilterBarSettings from './FilterBarSettings';
 import FilterConfigurationLink from './FilterConfigurationLink';
 import crossFiltersSelector from './CrossFilters/selectors';
+import getBootstrapData from 'src/utils/getBootstrapData';
+
+const formatTimeRangeText = (input: string) => {
+  const regex = /(\d{4}-\d{2}-\d{2}) ≤ col < (\d{4}-\d{2}-\d{2})/;
+  const match = input.match(regex);
+  if (!match) return '';
+  const [, start, end] = match;
+
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  endDate.setDate(endDate.getDate() - 1);
+
+  const locale = getBootstrapData().common.locale;
+  return `${startDate.toLocaleDateString(
+    locale,
+  )} – ${endDate.toLocaleDateString(locale)}`;
+};
+
+const TimeRangeDisplay = styled.div`
+  color: white;
+`;
 
 const HorizontalBar = styled.div`
   ${({ theme }) => `
@@ -119,6 +142,18 @@ const HorizontalFilterBar: FC<HorizontalBarProps> = ({
   );
   const verboseMaps = useChartsVerboseMaps();
 
+  const [timeRangeText, setTimeRangeText] = useState('');
+
+  useEffect(() => {
+    const timeRange = Object.values(dataMask).find(
+      (filter: DataMaskWithId) => filter.extraFormData?.time_range,
+    )?.extraFormData?.time_range;
+
+    fetchTimeRange(timeRange ?? 'Last year').then(({ value }) => {
+      setTimeRangeText(formatTimeRangeText(value));
+    });
+  }, [dataMask]);
+
   const selectedCrossFilters = isCrossFiltersEnabled
     ? crossFiltersSelector({
         dataMask,
@@ -159,6 +194,7 @@ const HorizontalFilterBar: FC<HorizontalBarProps> = ({
               />
             )}
             {actions}
+            <TimeRangeDisplay>{timeRangeText}</TimeRangeDisplay>
           </>
         )}
       </HorizontalBarContent>
