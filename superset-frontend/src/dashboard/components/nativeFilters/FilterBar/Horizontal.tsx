@@ -32,13 +32,13 @@ import Icons from 'src/components/Icons';
 import Loading from 'src/components/Loading';
 import { DashboardLayout, RootState } from 'src/dashboard/types';
 import { useSelector } from 'react-redux';
+import getBootstrapData from 'src/utils/getBootstrapData';
 import FilterControls from './FilterControls/FilterControls';
 import { useChartsVerboseMaps, getFilterBarTestId } from './utils';
 import { HorizontalBarProps } from './types';
 import FilterBarSettings from './FilterBarSettings';
 import FilterConfigurationLink from './FilterConfigurationLink';
 import crossFiltersSelector from './CrossFilters/selectors';
-import getBootstrapData from 'src/utils/getBootstrapData';
 
 const formatTimeRangeText = (input: string) => {
   const regex = /(\d{4}-\d{2}-\d{2}) ≤ col < (\d{4}-\d{2}-\d{2})/;
@@ -50,14 +50,16 @@ const formatTimeRangeText = (input: string) => {
   const endDate = new Date(end);
   endDate.setDate(endDate.getDate() - 1);
 
-  const locale = getBootstrapData().common.locale;
+  const { locale } = getBootstrapData().common;
   return `${startDate.toLocaleDateString(
     locale,
   )} – ${endDate.toLocaleDateString(locale)}`;
 };
 
 const TimeRangeDisplay = styled.div`
-  color: white;
+  ${({ theme }) => `
+    color: ${theme.colors.grayscale.light5};
+  `}
 `;
 
 const HorizontalBar = styled.div`
