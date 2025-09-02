@@ -40,9 +40,9 @@ import FilterBarSettings from './FilterBarSettings';
 import FilterConfigurationLink from './FilterConfigurationLink';
 import crossFiltersSelector from './CrossFilters/selectors';
 
-const formatTimeRangeText = (input: string = '') => {
+const formatTimeRangeText = (range = '') => {
   const regex = /(\d{4}-\d{2}-\d{2}) ≤ col < (\d{4}-\d{2}-\d{2})/;
-  const match = input.match(regex);
+  const match = range.match(regex);
   if (!match) return '';
   const [, start, end] = match;
 
