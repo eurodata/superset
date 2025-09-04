@@ -17,9 +17,7 @@
  * under the License.
  */
 
-const appContainer = document.getElementById('app');
-const dataBootstrap = appContainer?.getAttribute('data-bootstrap');
-const documentationResolverUrl = JSON.parse(dataBootstrap)?.common?.documentation_resolver?.url;
+const documentationResolverUrl = bootstrapData?.common?.documentation_resolver?.url;
 
 if (documentationResolverUrl) {
   const observer = new MutationObserver(() => {

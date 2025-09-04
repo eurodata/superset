@@ -75,6 +75,11 @@ from superset.views.error_handling import json_error_response
 
 from .utils import bootstrap_user_data
 
+from superset import db
+from superset.models.slice import Slice
+from superset.connectors.sqla.models import SqlaTable
+from superset.models.core import Database
+
 FRONTEND_CONF_KEYS = (
     "SUPERSET_WEBSERVER_TIMEOUT",
     "SUPERSET_DASHBOARD_POSITION_DATA_LIMIT",
@@ -330,6 +335,14 @@ def cached_common_bootstrap_data(  # pylint: disable=unused-argument
 
     language = locale.language if locale else "en"
 
+    # uuid of "Kanzleivergleich" chart
+    uuid = "4e70bad9-d29e-45cc-bd17-2ff88a1d06cd"
+    slice_obj = db.session.query(Slice).filter_by(uuid=uuid).one_or_none()
+
+    if slice_obj:
+        slice_id = slice_obj.id
+    else:
+        slice_id = None
     bootstrap_data = {
         "conf": frontend_config,
         "locale": language,
@@ -342,6 +355,9 @@ def cached_common_bootstrap_data(  # pylint: disable=unused-argument
         "extra_categorical_color_schemes": conf["EXTRA_CATEGORICAL_COLOR_SCHEMES"],
         "theme_overrides": conf["THEME_OVERRIDES"],
         "menu_data": menu_data(g.user),
+        "tax_office_comparison": {
+            "slice_id": slice_id
+        },
     }
     bootstrap_data.update(conf["COMMON_BOOTSTRAP_OVERRIDES_FUNC"](bootstrap_data))
     return bootstrap_data
