@@ -66,6 +66,7 @@ from superset.db_engine_specs import get_available_engine_specs
 from superset.db_engine_specs.gsheets import GSheetsEngineSpec
 from superset.extensions import cache_manager
 from superset.models.helpers import ImportExportMixin
+from superset.models.slice import Slice
 from superset.reports.models import ReportRecipientType
 from superset.superset_typing import FlaskResponse
 from superset.translations.utils import get_language_pack
@@ -74,11 +75,6 @@ from superset.utils.filters import get_dataset_access_filters
 from superset.views.error_handling import json_error_response
 
 from .utils import bootstrap_user_data
-
-from superset import db
-from superset.models.slice import Slice
-from superset.connectors.sqla.models import SqlaTable
-from superset.models.core import Database
 
 FRONTEND_CONF_KEYS = (
     "SUPERSET_WEBSERVER_TIMEOUT",
@@ -355,9 +351,7 @@ def cached_common_bootstrap_data(  # pylint: disable=unused-argument
         "extra_categorical_color_schemes": conf["EXTRA_CATEGORICAL_COLOR_SCHEMES"],
         "theme_overrides": conf["THEME_OVERRIDES"],
         "menu_data": menu_data(g.user),
-        "tax_office_comparison": {
-            "slice_id": slice_id
-        },
+        "tax_office_comparison": {"slice_id": slice_id},
     }
     bootstrap_data.update(conf["COMMON_BOOTSTRAP_OVERRIDES_FUNC"](bootstrap_data))
     return bootstrap_data

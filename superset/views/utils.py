@@ -26,8 +26,8 @@ from flask import flash, g, has_request_context, redirect, request
 from flask_appbuilder.security.sqla import models as ab_models
 from flask_appbuilder.security.sqla.models import User
 from flask_babel import _
-from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from sqlalchemy import text
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from werkzeug.wrappers.response import Response
 
 from superset import app, dataframe, db, result_set, viz
@@ -51,8 +51,6 @@ from superset.utils import json
 from superset.utils.core import DatasourceType, get_user_id
 from superset.utils.decorators import stats_timing
 from superset.viz import BaseViz
-from superset import db
-from superset.models.core import Database
 
 logger = logging.getLogger(__name__)
 stats_logger = app.config["STATS_LOGGER"]
@@ -100,12 +98,15 @@ def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, An
                         {
                             "user_id": user_id,
                             "scope_type": "tax_advisor_office",
-                            "instance_id": "ist_erloese"
-                        }
+                            "instance_id": "ist_erloese",
+                        },
                     )
                     num_tax_offices = result.scalar()
-                except SQLAlchemyError as ex:
-                    logger.error("Number of permitted tax offices could not be fetched", exc_info=True)
+                except SQLAlchemyError:
+                    logger.error(
+                        "Number of permitted tax offices could not be fetched",
+                        exc_info=True,
+                    )
                     num_tax_offices = None
         payload = {
             "username": user.username,
@@ -116,7 +117,7 @@ def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, An
             "isAnonymous": user.is_anonymous,
             "createdOn": user.created_on.isoformat(),
             "email": user.email,
-            "num_tax_offices": num_tax_offices
+            "num_tax_offices": num_tax_offices,
         }
 
     if include_perms:
