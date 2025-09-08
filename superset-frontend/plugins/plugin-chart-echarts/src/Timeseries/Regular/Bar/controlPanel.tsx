@@ -53,6 +53,7 @@ const {
   yAxisBounds,
   zoomable,
   orientation,
+  xAxisLabelLength,
 } = DEFAULT_FORM_DATA;
 
 function createAxisTitleControl(axis: 'x' | 'y'): ControlSetRow[] {
@@ -180,6 +181,25 @@ function createAxisControl(axis: 'x' | 'y'): ControlSetRow[] {
         name: xAxisLabelRotation.name,
         config: {
           ...xAxisLabelRotation.config,
+          visibility: ({ controls }: ControlPanelsContainerProps) =>
+            isXAxis ? isVertical(controls) : isHorizontal(controls),
+          disableStash: true,
+          resetOnHide: false,
+        },
+      },
+    ],
+    [
+      {
+        name: 'xAxisLabelLength',
+        config: {
+          type: 'TextControl',
+          label: t('X axis label length'),
+          renderTrigger: true,
+          isInt: true,
+          default: xAxisLabelLength,
+          description: t(
+            'Maximum length of X axis label before it is truncated. Leave empty to disable truncation.',
+          ),
           visibility: ({ controls }: ControlPanelsContainerProps) =>
             isXAxis ? isVertical(controls) : isHorizontal(controls),
           disableStash: true,
