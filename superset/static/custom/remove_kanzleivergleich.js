@@ -24,8 +24,8 @@ if (numTaxOfficePermissions !== null && numTaxOfficePermissions !== undefined &&
   const observer = new MutationObserver(() => {
     const chartElement = document.querySelector(`[data-test-chart-id="${sliceId}"]`);
     if (chartElement) {
-      const parentTwoLevelsUp = chartElement.parentElement.parentElement;
-      parentTwoLevelsUp.remove();
+      const parent = chartElement.parentElement;
+      parent.remove();
     }
   });
 
