@@ -16,25 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { LegendOrientation } from './types';
 
-export const defaultGrid = {
-  containLabel: true,
-};
+const numTaxOfficePermissions = bootstrapData?.user?.num_tax_offices;
+const sliceId = bootstrapData?.common.tax_office_comparison?.slice_id;
 
-export const defaultYAxis = {
-  scale: true,
-  yAxisLabelRotation: 0,
-};
+if (num_tax_offices !== null && num_tax_offices !== undefined && numTaxOfficePermissions <= 1 && sliceId) {
+  const observer = new MutationObserver(() => {
+    const chartElement = document.querySelector(`[data-test-chart-id="${sliceId}"]`);
+    if (chartElement) {
+      const parentTwoLevelsUp = chartElement.parentElement.parentElement;
+      parentTwoLevelsUp.remove();
+    }
+  });
 
-export const defaultXAxis = {
-  xAxisLabelRotation: 0,
-  xAxisLabelLength: 10,
-};
-
-export const defaultLegendPadding = {
-  [LegendOrientation.Top]: 20,
-  [LegendOrientation.Bottom]: 20,
-  [LegendOrientation.Left]: 170,
-  [LegendOrientation.Right]: 170,
-};
+  observer.observe(document.body, { childList: true, subtree: true });
+}

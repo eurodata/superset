@@ -26,7 +26,8 @@ from flask import flash, g, has_request_context, redirect, request
 from flask_appbuilder.security.sqla import models as ab_models
 from flask_appbuilder.security.sqla.models import User
 from flask_babel import _
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy import text
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from werkzeug.wrappers.response import Response
 
 from superset import app, dataframe, db, result_set, viz
@@ -47,7 +48,7 @@ from superset.models.slice import Slice
 from superset.models.sql_lab import Query
 from superset.superset_typing import FormData
 from superset.utils import json
-from superset.utils.core import DatasourceType
+from superset.utils.core import DatasourceType, get_user_id
 from superset.utils.decorators import stats_timing
 from superset.viz import BaseViz
 
@@ -81,6 +82,32 @@ def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, An
             "isAnonymous": user.is_anonymous,
         }
     else:
+        database = db.session.query(Database).first()
+        with database.get_sqla_engine() as engine:
+            with engine.connect() as conn:
+                user_id = get_user_id()
+                try:
+                    query = text("""SELECT COUNT(scope_id)
+                    FROM bi.user_permission
+                    WHERE superset_user_id = :user_id
+                        AND scope_type = :scope_type
+                        AND instance_id = :instance_id""")
+
+                    result = conn.execute(
+                        query,
+                        {
+                            "user_id": user_id,
+                            "scope_type": "tax_advisor_office",
+                            "instance_id": "ist_erloese",
+                        },
+                    )
+                    num_tax_offices = result.scalar()
+                except SQLAlchemyError:
+                    logger.error(
+                        "Number of permitted tax offices could not be fetched",
+                        exc_info=True,
+                    )
+                    num_tax_offices = None
         payload = {
             "username": user.username,
             "firstName": user.first_name,
@@ -90,6 +117,7 @@ def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, An
             "isAnonymous": user.is_anonymous,
             "createdOn": user.created_on.isoformat(),
             "email": user.email,
+            "num_tax_offices": num_tax_offices,
         }
 
     if include_perms:

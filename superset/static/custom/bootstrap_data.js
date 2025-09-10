@@ -16,25 +16,5 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { LegendOrientation } from './types';
 
-export const defaultGrid = {
-  containLabel: true,
-};
-
-export const defaultYAxis = {
-  scale: true,
-  yAxisLabelRotation: 0,
-};
-
-export const defaultXAxis = {
-  xAxisLabelRotation: 0,
-  xAxisLabelLength: 10,
-};
-
-export const defaultLegendPadding = {
-  [LegendOrientation.Top]: 20,
-  [LegendOrientation.Bottom]: 20,
-  [LegendOrientation.Left]: 170,
-  [LegendOrientation.Right]: 170,
-};
+const bootstrapData = JSON.parse(document.getElementById('app').getAttribute('data-bootstrap'));

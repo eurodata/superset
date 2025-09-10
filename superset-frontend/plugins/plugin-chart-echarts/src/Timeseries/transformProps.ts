@@ -178,6 +178,7 @@ export default function transformProps(
     xAxisBounds,
     xAxisForceCategorical,
     xAxisLabelRotation,
+    xAxisLabelLength,
     xAxisSortSeries,
     xAxisSortSeriesAscending,
     xAxisTimeFormat,
@@ -191,6 +192,7 @@ export default function transformProps(
     yAxisTitlePosition,
     zoomable,
   }: EchartsTimeseriesFormData = { ...DEFAULT_FORM_DATA, ...formData };
+
   const refs: Refs = {};
   const groupBy = ensureIsArray(groupby);
   const labelMap: { [key: string]: string[] } = Object.entries(
@@ -465,13 +467,17 @@ export default function transformProps(
       ? getTooltipTimeFormatter(tooltipTimeFormat)
       : String;
 
-  const truncate = (value: string, maxLength: number) =>
-    value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
+  const truncate = (value: string, maxLength: number | string) => {
+    if (typeof maxLength !== 'number') {
+      return value;
+    }
+    return value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
+  };
 
   const xAxisFormatter =
     xAxisDataType === GenericDataType.Temporal
       ? getXAxisFormatter(xAxisTimeFormat)
-      : (value: any) => truncate(String(value), 10);
+      : (value: any) => truncate(String(value), xAxisLabelLength);
 
   const {
     setDataMask = () => {},
