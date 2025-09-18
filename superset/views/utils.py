@@ -111,17 +111,23 @@ def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, An
         hidden_elements = []
         if num_tax_offices < 2:
             # uuid of "IST Erlöse" dashboard
-            ist_erloese_uuid = '1e741ee4-6ce1-4533-8877-c122d2c7301b'
+            ist_erloese_uuid = "1e741ee4-6ce1-4533-8877-c122d2c7301b"
             hidden_elements = []
-            dashboard = db.session.query(Dashboard).filter_by(uuid=ist_erloese_uuid).one_or_none()
+            dashboard = (
+                db.session.query(Dashboard)
+                .filter_by(uuid=ist_erloese_uuid)
+                .one_or_none()
+            )
             if dashboard:
                 position_data = dashboard.position
                 # uuid of "IST Erlöse Kanzleivergleich" chart
                 kanzleivergleich_uuid = "4e70bad9-d29e-45cc-bd17-2ff88a1d06cd"
                 matches = list(
-                filter(
-                    lambda kv: isinstance(kv[1], dict) and kv[1].get("type") == "CHART" and kv[1].get("meta", {}).get("uuid") == kanzleivergleich_uuid,
-                    position_data.items()
+                    filter(
+                        lambda kv: isinstance(kv[1], dict)
+                        and kv[1].get("type") == "CHART"
+                        and kv[1].get("meta", {}).get("uuid") == kanzleivergleich_uuid,
+                        position_data.items(),
                     )
                 )
                 if matches:
