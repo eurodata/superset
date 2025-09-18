@@ -46,6 +46,7 @@ import backgroundStyleOptions from 'src/dashboard/util/backgroundStyleOptions';
 import { BACKGROUND_TRANSPARENT } from 'src/dashboard/util/constants';
 import { EMPTY_CONTAINER_Z_INDEX } from 'src/dashboard/constants';
 import { isCurrentUserBot } from 'src/utils/isBot';
+import getBootstrapData from 'src/utils/getBootstrapData';
 
 const propTypes = {
   id: PropTypes.string.isRequired,
@@ -266,6 +267,11 @@ class Row extends PureComponent {
     );
     const remainColumnCount = availableColumnCount - occupiedColumnCount;
 
+    const hiddenElements = getBootstrapData().user.hidden_elements;
+    const visibleRowItems = rowItems.filter(
+      id => !hiddenElements.includes(id) || editMode,
+    );
+
     return (
       <Draggable
         component={rowComponent}
@@ -350,8 +356,8 @@ class Row extends PureComponent {
               {rowItems.length === 0 && (
                 <div css={emptyRowContentStyles}>{t('Empty row')}</div>
               )}
-              {rowItems.length > 0 &&
-                rowItems.map((componentId, itemIndex) => (
+              {visibleRowItems.length > 0 &&
+                visibleRowItems.map((componentId, itemIndex) => (
                   <Fragment key={componentId}>
                     <DashboardComponent
                       key={componentId}
@@ -367,6 +373,10 @@ class Row extends PureComponent {
                       isComponentVisible={isComponentVisible}
                       onChangeTab={onChangeTab}
                       isInView={this.state.isInView}
+                      resizeToFillWidth={
+                        rowItems.length > visibleRowItems.length &&
+                        visibleRowItems.length === 1
+                      }
                     />
                     {editMode && (
                       <Droppable

@@ -68,6 +68,8 @@ interface ChartHolderProps {
   handleComponentDrop: (...args: unknown[]) => unknown;
   setFullSizeChartId: (chartId: number | null) => void;
   isInView: boolean;
+
+  resizeToFillWidth: boolean;
 }
 
 const ChartHolder: React.FC<ChartHolderProps> = ({
@@ -92,6 +94,7 @@ const ChartHolder: React.FC<ChartHolderProps> = ({
   handleComponentDrop,
   setFullSizeChartId,
   isInView,
+  resizeToFillWidth,
 }) => {
   const theme = useTheme();
   const fullSizeStyle = css`
@@ -175,10 +178,15 @@ const ChartHolder: React.FC<ChartHolderProps> = ({
     )?.meta?.width;
 
     let widthMultiple = component.meta.width || GRID_MIN_COLUMN_COUNT;
+
     if (parentComponent.type === COLUMN_TYPE) {
       widthMultiple = parentComponent.meta.width || GRID_MIN_COLUMN_COUNT;
     } else if (columnParentWidth && widthMultiple > columnParentWidth) {
       widthMultiple = columnParentWidth;
+    }
+
+    if (resizeToFillWidth) {
+      widthMultiple = 12;
     }
 
     return widthMultiple;

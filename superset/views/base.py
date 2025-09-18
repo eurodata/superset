@@ -66,7 +66,6 @@ from superset.db_engine_specs import get_available_engine_specs
 from superset.db_engine_specs.gsheets import GSheetsEngineSpec
 from superset.extensions import cache_manager
 from superset.models.helpers import ImportExportMixin
-from superset.models.slice import Slice
 from superset.reports.models import ReportRecipientType
 from superset.superset_typing import FlaskResponse
 from superset.translations.utils import get_language_pack
@@ -331,14 +330,6 @@ def cached_common_bootstrap_data(  # pylint: disable=unused-argument
 
     language = locale.language if locale else "en"
 
-    # uuid of "Kanzleivergleich" chart
-    uuid = "4e70bad9-d29e-45cc-bd17-2ff88a1d06cd"
-    slice_obj = db.session.query(Slice).filter_by(uuid=uuid).one_or_none()
-
-    if slice_obj:
-        slice_id = slice_obj.id
-    else:
-        slice_id = None
     bootstrap_data = {
         "conf": frontend_config,
         "locale": language,
@@ -351,7 +342,6 @@ def cached_common_bootstrap_data(  # pylint: disable=unused-argument
         "extra_categorical_color_schemes": conf["EXTRA_CATEGORICAL_COLOR_SCHEMES"],
         "theme_overrides": conf["THEME_OVERRIDES"],
         "menu_data": menu_data(g.user),
-        "tax_office_comparison": {"slice_id": slice_id},
     }
     bootstrap_data.update(conf["COMMON_BOOTSTRAP_OVERRIDES_FUNC"](bootstrap_data))
     return bootstrap_data

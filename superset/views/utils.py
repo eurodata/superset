@@ -107,7 +107,26 @@ def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, An
                         "Number of permitted tax offices could not be fetched",
                         exc_info=True,
                     )
-                    num_tax_offices = None
+                    num_tax_offices = 0
+        hidden_elements = []
+        if num_tax_offices < 2:
+            # uuid of "IST Erlöse" dashboard
+            ist_erloese_uuid = '1e741ee4-6ce1-4533-8877-c122d2c7301b'
+            hidden_elements = []
+            dashboard = db.session.query(Dashboard).filter_by(uuid=ist_erloese_uuid).one_or_none()
+            if dashboard:
+                position_data = dashboard.position
+                # uuid of "IST Erlöse Kanzleivergleich" chart
+                kanzleivergleich_uuid = "4e70bad9-d29e-45cc-bd17-2ff88a1d06cd"
+                matches = list(
+                filter(
+                    lambda kv: isinstance(kv[1], dict) and kv[1].get("type") == "CHART" and kv[1].get("meta", {}).get("uuid") == kanzleivergleich_uuid,
+                    position_data.items()
+                    )
+                )
+                if matches:
+                    chart_key = matches[0][0]
+                    hidden_elements.append(chart_key)
         payload = {
             "username": user.username,
             "firstName": user.first_name,
@@ -117,7 +136,7 @@ def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, An
             "isAnonymous": user.is_anonymous,
             "createdOn": user.created_on.isoformat(),
             "email": user.email,
-            "num_tax_offices": num_tax_offices,
+            "hidden_elements": hidden_elements,
         }
 
     if include_perms:
