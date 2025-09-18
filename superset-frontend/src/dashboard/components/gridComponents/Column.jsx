@@ -173,7 +173,7 @@ class Column extends PureComponent {
       editMode,
       onChangeTab,
       isComponentVisible,
-      resizeToFillWidth,
+      resizeToFullWidth,
     } = this.props;
 
     const columnItems = columnComponent.children || [];
@@ -200,7 +200,7 @@ class Column extends PureComponent {
             adjustableWidth
             adjustableHeight={false}
             widthStep={columnWidth}
-            widthMultiple={resizeToFillWidth ? 12 : columnComponent.meta.width}
+            widthMultiple={resizeToFullWidth ? 12 : columnComponent.meta.width}
             minWidthMultiple={minColumnWidth}
             maxWidthMultiple={
               availableColumnCount + (columnComponent.meta.width || 0)
@@ -282,7 +282,7 @@ class Column extends PureComponent {
                         onResizeStop={onResizeStop}
                         isComponentVisible={isComponentVisible}
                         onChangeTab={onChangeTab}
-                        resizeToFillWidth={resizeToFillWidth}
+                        resizeToFullWidth={resizeToFullWidth}
                       />
                       {editMode && (
                         <Droppable

@@ -373,7 +373,7 @@ class Row extends PureComponent {
                       isComponentVisible={isComponentVisible}
                       onChangeTab={onChangeTab}
                       isInView={this.state.isInView}
-                      resizeToFillWidth={
+                      resizeToFullWidth={
                         rowItems.length > visibleRowItems.length &&
                         visibleRowItems.length === 1
                       }
