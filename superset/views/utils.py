@@ -68,6 +68,7 @@ def sanitize_datasource_data(datasource_data: dict[str, Any]) -> dict[str, Any]:
 
     return datasource_data
 
+
 def get_num_tax_offices() -> int:
     database = db.session.query(Database).first()
     with database.get_sqla_engine() as engine:
@@ -96,6 +97,7 @@ def get_num_tax_offices() -> int:
                 )
                 num_tax_offices = 0
     return num_tax_offices
+
 
 def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, Any]:
     if user.is_anonymous:
