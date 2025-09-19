@@ -68,6 +68,34 @@ def sanitize_datasource_data(datasource_data: dict[str, Any]) -> dict[str, Any]:
 
     return datasource_data
 
+def get_num_tax_offices() -> int:
+    database = db.session.query(Database).first()
+    with database.get_sqla_engine() as engine:
+        with engine.connect() as conn:
+            user_id = get_user_id()
+            try:
+                query = text("""SELECT COUNT(scope_id)
+                FROM bi.user_permission
+                WHERE superset_user_id = :user_id
+                    AND scope_type = :scope_type
+                    AND instance_id = :instance_id""")
+
+                result = conn.execute(
+                    query,
+                    {
+                        "user_id": user_id,
+                        "scope_type": "tax_advisor_office",
+                        "instance_id": "ist_erloese",
+                    },
+                )
+                num_tax_offices = result.scalar()
+            except SQLAlchemyError:
+                logger.error(
+                    "Number of permitted tax offices could not be fetched",
+                    exc_info=True,
+                )
+                num_tax_offices = 0
+    return num_tax_offices
 
 def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, Any]:
     if user.is_anonymous:
@@ -82,37 +110,11 @@ def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, An
             "isAnonymous": user.is_anonymous,
         }
     else:
-        database = db.session.query(Database).first()
-        with database.get_sqla_engine() as engine:
-            with engine.connect() as conn:
-                user_id = get_user_id()
-                try:
-                    query = text("""SELECT COUNT(scope_id)
-                    FROM bi.user_permission
-                    WHERE superset_user_id = :user_id
-                        AND scope_type = :scope_type
-                        AND instance_id = :instance_id""")
-
-                    result = conn.execute(
-                        query,
-                        {
-                            "user_id": user_id,
-                            "scope_type": "tax_advisor_office",
-                            "instance_id": "ist_erloese",
-                        },
-                    )
-                    num_tax_offices = result.scalar()
-                except SQLAlchemyError:
-                    logger.error(
-                        "Number of permitted tax offices could not be fetched",
-                        exc_info=True,
-                    )
-                    num_tax_offices = 0
-        hidden_elements = []
+        num_tax_offices = get_num_tax_offices()
+        hidden_elements: list[str] = []
         if num_tax_offices < 2:
             # uuid of "IST Erlöse" dashboard
             ist_erloese_uuid = "1e741ee4-6ce1-4533-8877-c122d2c7301b"
-            hidden_elements = []
             dashboard = (
                 db.session.query(Dashboard)
                 .filter_by(uuid=ist_erloese_uuid)
