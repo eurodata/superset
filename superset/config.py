@@ -414,10 +414,10 @@ class D3Format(TypedDict, total=False):
 
 
 D3_FORMAT: D3Format = {
-    "decimal": ",",           # - decimal place string (e.g., ".").
-    "thousands": ".",         # - group separator string (e.g., ",").
-    "grouping": [3],          # - array of group sizes (e.g., [3]), cycled as needed.
-    "currency": ["", " €"]     # - currency prefix/suffix strings (e.g., ["$", ""])
+    "decimal": ",",  # - decimal place string (e.g., ".").
+    "thousands": ".",  # - group separator string (e.g., ",").
+    "grouping": [3],  # - array of group sizes (e.g., [3]), cycled as needed.
+    "currency": ["", " €"],  # - currency prefix/suffix strings (e.g., ["$", ""])
 }
 
 
