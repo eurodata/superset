@@ -267,7 +267,7 @@ class Row extends PureComponent {
     );
     const remainColumnCount = availableColumnCount - occupiedColumnCount;
 
-    const hiddenElements = getBootstrapData().user.hidden_elements;
+    const hiddenElements = getBootstrapData()?.user?.hidden_elements || [];
     const visibleRowItems = rowItems.filter(
       id => !hiddenElements.includes(id) || editMode,
     );
