@@ -42,12 +42,21 @@ export default function DownloadAsPdf({
       if (dashboardContent) {
         const dashboardContentStyle = window.getComputedStyle(dashboardContent);
         const hexRegex = /^#(?:[A-Fa-f0-9]{3}){1,2}$/;
-        const rgbRegex = /^rgb[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*(?:,(?![)])|(?=[)]))){3}[)]$/;
-        if (hexRegex.test(dashboardContentStyle.backgroundColor) || rgbRegex.test(dashboardContentStyle.backgroundColor)) {
+        const rgbRegex =
+          /^rgb[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*(?:,(?![)])|(?=[)]))){3}[)]$/;
+        if (
+          hexRegex.test(dashboardContentStyle.backgroundColor) ||
+          rgbRegex.test(dashboardContentStyle.backgroundColor)
+        ) {
           pdfBackgroundColor = dashboardContentStyle.backgroundColor;
-        };
+        }
       }
-      downloadAsPdf(SCREENSHOT_NODE_SELECTOR, dashboardTitle, true, pdfBackgroundColor)(e);
+      downloadAsPdf(
+        SCREENSHOT_NODE_SELECTOR,
+        dashboardTitle,
+        true,
+        pdfBackgroundColor,
+      )(e);
     } catch (error) {
       logging.error(error);
       addDangerToast(t('Sorry, something went wrong. Try again later.'));
