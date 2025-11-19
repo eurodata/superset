@@ -18,6 +18,9 @@
  */
 
 declare module 'dom-to-image-more' {
+  export interface DomToImage {
+    toCanvas(node: Node, options?: any): Promise<HTMLCanvasElement>;
+  }
   import domToImage = require('dom-to-image-more');
   export = domToImage;
 }

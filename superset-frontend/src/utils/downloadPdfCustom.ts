@@ -17,13 +17,13 @@
  * under the License.
  */
 // Based on dom-to-image library. We modified it to be able to set the background of the pdf
-const domToImage = require('dom-to-image');
-const { jsPDF } = require('jspdf');
+// const domToImage = require('dom-to-image');
+import domToImage from 'dom-to-image-more';
+import { jsPDF, jsPDFOptions } from 'jspdf';
 
-const _cloneNode = (node: Node, javascriptEnabled?: Boolean): Node => {
+const cloneNode = (node: Node, javascriptEnabled?: Boolean): Node => {
   let child;
-  let clone;
-  clone =
+  const clone =
     node.nodeType === 3
       ? document.createTextNode(node.nodeValue ?? '')
       : node.cloneNode(false);
@@ -34,7 +34,7 @@ const _cloneNode = (node: Node, javascriptEnabled?: Boolean): Node => {
       child.nodeType !== 1 ||
       child.nodeName !== 'SCRIPT'
     ) {
-      clone.appendChild(_cloneNode(child, javascriptEnabled));
+      clone.appendChild(cloneNode(child, javascriptEnabled));
     }
     child = child.nextSibling;
   }
@@ -73,7 +73,7 @@ const _cloneNode = (node: Node, javascriptEnabled?: Boolean): Node => {
   return clone;
 };
 
-const _createElement = (
+const createElement = (
   tagName: string,
   {
     className,
@@ -82,21 +82,17 @@ const _createElement = (
   }: {
     className?: string;
     innerHTML?: string;
-    style?: Record<string, string>;
+    style?: Record<string, string | number>;
   },
 ): Element => {
-  let el;
-  let i;
-  let scripts;
-  el = document.createElement(tagName);
+  const el = document.createElement(tagName);
   if (className) {
     el.className = className;
   }
   if (innerHTML) {
     el.innerHTML = innerHTML;
-    scripts = el.getElementsByTagName('script');
-    i = scripts.length;
-    while (i-- > 0) {
+    const scripts = el.getElementsByTagName('script');
+    for (let i = scripts.length - 1; i >= 0; i--) {
       scripts[i].parentNode?.removeChild(scripts[i]);
     }
   }
@@ -107,16 +103,14 @@ const _createElement = (
   return el;
 };
 
-const _isCanvasBlank = (
+const isCanvasBlank = (
   canvas: HTMLCanvasElement,
   bgColor: string,
 ): Boolean => {
-  let blank;
-  let ctx;
-  blank = document.createElement('canvas');
+  const blank = document.createElement('canvas');
   blank.width = canvas.width;
   blank.height = canvas.height;
-  ctx = blank.getContext('2d');
+  const ctx = blank.getContext('2d');
   if (ctx) {
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, blank.width, blank.height);
@@ -150,36 +144,19 @@ const downloadPdfCustom = (
 ): Promise<any> => {
   const a4Height = 841.89;
   const a4Width = 595.28;
-  let overrideWidth;
-  let container;
-  let containerCSS: any;
-  let containerWidth;
-  let elements;
-  let excludeClassNames;
-  let excludeTagNames;
-  let filename;
-  let filterFn;
-  let innerRatio;
-  let overlay;
-  let overlayCSS: any;
-  let pageHeightPx;
-  let proxyUrl;
-  let compression = 'NONE';
-  let scale;
   let opts;
   let offsetHeight;
   let offsetWidth;
   let scaleObj;
   let style;
-  let pdfBackgroundColor;
   const transformOrigin = 'top left';
-  const pdfOptions = {
+  const pdfOptions: jsPDFOptions = {
     orientation: 'p',
     unit: 'pt',
     format: 'a4',
   };
 
-  ({
+  const {
     filename,
     excludeClassNames = [],
     excludeTagNames = ['button', 'input', 'select'],
@@ -188,9 +165,9 @@ const downloadPdfCustom = (
     compression,
     scale,
     pdfBackgroundColor = 'white',
-  } = options ?? {});
+  } = options ?? {};
 
-  overlayCSS = {
+  const overlayCSS:any = {
     position: 'fixed',
     zIndex: 1000,
     opacity: 0,
@@ -203,7 +180,7 @@ const downloadPdfCustom = (
   if (overrideWidth) {
     overlayCSS.width = `${overrideWidth}px`;
   }
-  containerCSS = {
+  const containerCSS = {
     position: 'absolute',
     left: 0,
     right: 0,
@@ -213,19 +190,19 @@ const downloadPdfCustom = (
     overflow: 'auto',
     backgroundColor: 'white',
   };
-  overlay = _createElement('div', {
+  const overlay = createElement('div', {
     style: overlayCSS,
   });
-  container = _createElement('div', {
+  const container = createElement('div', {
     style: containerCSS,
   });
-  container.appendChild(_cloneNode(dom));
+  container.appendChild(cloneNode(dom));
   overlay.appendChild(container);
   document.body.appendChild(overlay);
-  innerRatio = a4Height / a4Width;
-  containerWidth = overrideWidth || container.getBoundingClientRect().width;
-  pageHeightPx = Math.floor(containerWidth * innerRatio);
-  elements = container.querySelectorAll('*');
+  const innerRatio = a4Height / a4Width;
+  const containerWidth = overrideWidth || container.getBoundingClientRect().width;
+  const pageHeightPx = Math.floor(containerWidth * innerRatio);
+  const elements = container.querySelectorAll('*');
 
   for (let i = 0, len = excludeClassNames.length; i < len; i++) {
     const clName = excludeClassNames[i];
@@ -236,7 +213,7 @@ const downloadPdfCustom = (
 
   for (let j = 0, len1 = excludeTagNames.length; j < len1; j++) {
     const tName = excludeTagNames[j];
-    let els = container.getElementsByTagName(tName);
+    const els = container.getElementsByTagName(tName);
 
     for (let k = els.length - 1; k >= 0; k--) {
       if (!els[k]) {
@@ -251,9 +228,8 @@ const downloadPdfCustom = (
     let endPage;
     let nPages;
     let pad;
-    let rules;
     let startPage;
-    rules = {
+    const rules = {
       before: false,
       after: false,
       avoid: true,
@@ -269,7 +245,7 @@ const downloadPdfCustom = (
       }
       // Before: Create a padding div to push the element to the next page.
       if (rules.before) {
-        pad = _createElement('div', {
+        pad = createElement('div', {
           style: {
             display: 'block',
             height: `${pageHeightPx - (clientRect.top % pageHeightPx)}px`,
@@ -281,7 +257,7 @@ const downloadPdfCustom = (
   });
 
   // Remove unnecessary elements from result pdf
-  filterFn = ({ classList, tagName }: any): Boolean => {
+  const filterFn = ({ classList, tagName }: any): Boolean => {
     let cName;
     let j;
     let len;
@@ -361,7 +337,7 @@ const downloadPdfCustom = (
           pageCtx.drawImage(canvas, 0, page * pageHeightPx, w, h, 0, 0, w, h);
         }
         // Don't create blank pages
-        if (_isCanvasBlank(pageCanvas, pdfBackgroundColor)) {
+        if (isCanvasBlank(pageCanvas, pdfBackgroundColor)) {
           ++page;
           continue;
         }

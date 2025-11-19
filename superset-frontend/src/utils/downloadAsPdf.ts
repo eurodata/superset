@@ -64,7 +64,7 @@ export default function downloadAsPdf(
       image: { type: 'jpeg', quality: 1 },
       html2canvas: { scale: 2 },
       excludeClassNames: ['header-controls'],
-      pdfBackgroundColor: pdfBackgroundColor,
+      pdfBackgroundColor,
     };
     return domToPdfCustom(elementToPrint, options)
       .then(() => {
