@@ -92,7 +92,7 @@ const createElement = (
   if (innerHTML) {
     el.innerHTML = innerHTML;
     const scripts = el.getElementsByTagName('script');
-    for (let i = scripts.length - 1; i >= 0; i--) {
+    for (let i = scripts.length - 1; i >= 0; i -= 1) {
       scripts[i].parentNode?.removeChild(scripts[i]);
     }
   }
@@ -103,10 +103,7 @@ const createElement = (
   return el;
 };
 
-const isCanvasBlank = (
-  canvas: HTMLCanvasElement,
-  bgColor: string,
-): Boolean => {
+const isCanvasBlank = (canvas: HTMLCanvasElement, bgColor: string): Boolean => {
   const blank = document.createElement('canvas');
   blank.width = canvas.width;
   blank.height = canvas.height;
@@ -167,7 +164,8 @@ const downloadPdfCustom = (
     pdfBackgroundColor = 'white',
   } = options ?? {};
 
-  const overlayCSS:any = {
+  /* eslint-disable theme-colors/no-literal-colors */
+  const overlayCSS: any = {
     position: 'fixed',
     zIndex: 1000,
     opacity: 0,
@@ -180,6 +178,7 @@ const downloadPdfCustom = (
   if (overrideWidth) {
     overlayCSS.width = `${overrideWidth}px`;
   }
+  /* eslint-disable theme-colors/no-literal-colors */
   const containerCSS = {
     position: 'absolute',
     left: 0,
@@ -200,22 +199,23 @@ const downloadPdfCustom = (
   overlay.appendChild(container);
   document.body.appendChild(overlay);
   const innerRatio = a4Height / a4Width;
-  const containerWidth = overrideWidth || container.getBoundingClientRect().width;
+  const containerWidth =
+    overrideWidth || container.getBoundingClientRect().width;
   const pageHeightPx = Math.floor(containerWidth * innerRatio);
   const elements = container.querySelectorAll('*');
 
-  for (let i = 0, len = excludeClassNames.length; i < len; i++) {
+  for (let i = 0, len = excludeClassNames.length; i < len; i += 1) {
     const clName = excludeClassNames[i];
     container.querySelectorAll(`.${clName}`).forEach(function (a) {
       return a.remove();
     });
   }
 
-  for (let j = 0, len1 = excludeTagNames.length; j < len1; j++) {
+  for (let j = 0, len1 = excludeTagNames.length; j < len1; j += 1) {
     const tName = excludeTagNames[j];
     const els = container.getElementsByTagName(tName);
 
-    for (let k = els.length - 1; k >= 0; k--) {
+    for (let k = els.length - 1; k >= 0; k -= 1) {
       if (!els[k]) {
         continue;
       }
@@ -223,8 +223,7 @@ const downloadPdfCustom = (
     }
   }
 
-  Array.prototype.forEach.call(elements, (el: any) => {
-    let clientRect;
+  Array.prototype.forEach.call(elements, (el: any): void => {
     let endPage;
     let nPages;
     let pad;
@@ -234,7 +233,7 @@ const downloadPdfCustom = (
       after: false,
       avoid: true,
     };
-    clientRect = el.getBoundingClientRect();
+    const clientRect = el.getBoundingClientRect();
     if (rules.avoid && !rules.before) {
       startPage = Math.floor(clientRect.top / pageHeightPx);
       endPage = Math.floor(clientRect.bottom / pageHeightPx);
@@ -251,7 +250,7 @@ const downloadPdfCustom = (
             height: `${pageHeightPx - (clientRect.top % pageHeightPx)}px`,
           },
         });
-        return el.parentNode.insertBefore(pad, el);
+        el.parentNode.insertBefore(pad, el);
       }
     }
   });
@@ -261,16 +260,15 @@ const downloadPdfCustom = (
     let cName;
     let j;
     let len;
-    let ref;
     if (classList) {
-      for (j = 0, len = excludeClassNames.length; j < len; j++) {
+      for (j = 0, len = excludeClassNames.length; j < len; j += 1) {
         cName = excludeClassNames[j];
         if (Array.prototype.indexOf.call(classList, cName) >= 0) {
           return false;
         }
       }
     }
-    ref = tagName != null ? tagName.toLowerCase() : undefined;
+    const ref = tagName != null ? tagName.toLowerCase() : undefined;
     return excludeTagNames.indexOf(ref) < 0;
   };
 
@@ -280,19 +278,18 @@ const downloadPdfCustom = (
   };
 
   if (scale && container instanceof HTMLElement) {
-    offsetWidth = container.offsetWidth;
-    offsetHeight = container.offsetHeight;
+    const { offsetWidth, offsetHeight } = container;
     style = {
-      transform: 'scale(' + scale + ')',
-      transformOrigin: transformOrigin,
-      width: offsetWidth + 'px',
-      height: offsetHeight + 'px',
+      transform: `scale(${scale})`,
+      transformOrigin,
+      width: `${offsetWidth}px`,
+      height: `${offsetHeight}px`,
     };
     scaleObj = {
       width: offsetWidth * scale,
       height: offsetHeight * scale,
       quality: 1,
-      style: style,
+      style,
     };
     opts = Object.assign(opts, scaleObj);
   }
@@ -302,25 +299,20 @@ const downloadPdfCustom = (
     .then((canvas: any) => {
       let h;
       let imgData;
-      let nPages;
       let page;
-      let pageCanvas;
-      let pageCtx;
       let pageHeight;
-      let pdf;
-      let pxFullHeight;
       let w;
       // Remove overlay
       document.body.removeChild(overlay);
       // Initialize the PDF.
-      pdf = new jsPDF(pdfOptions);
+      const pdf = new jsPDF(pdfOptions);
       // Calculate the number of pages.
-      pxFullHeight = canvas.height;
-      nPages = Math.ceil(pxFullHeight / pageHeightPx);
+      const pxFullHeight = canvas.height;
+      const nPages = Math.ceil(pxFullHeight / pageHeightPx);
       // Define pageHeight separately so it can be trimmed on the final page.
       pageHeight = a4Height;
-      pageCanvas = document.createElement('canvas');
-      pageCtx = pageCanvas.getContext('2d');
+      const pageCanvas = document.createElement('canvas');
+      const pageCtx = pageCanvas.getContext('2d');
       pageCanvas.width = canvas.width;
       pageCanvas.height = pageHeightPx;
       page = 0;
@@ -338,7 +330,7 @@ const downloadPdfCustom = (
         }
         // Don't create blank pages
         if (isCanvasBlank(pageCanvas, pdfBackgroundColor)) {
-          ++page;
+          page += 1;
           continue;
         }
         // Add the page to the PDF.
@@ -358,7 +350,7 @@ const downloadPdfCustom = (
           undefined,
           compression,
         );
-        ++page;
+        page += 1;
       }
       if (typeof cb === 'function') {
         cb(pdf);
