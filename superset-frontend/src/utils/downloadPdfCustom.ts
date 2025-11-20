@@ -142,8 +142,6 @@ const downloadPdfCustom = (
   const a4Height = 841.89;
   const a4Width = 595.28;
   let opts;
-  let offsetHeight;
-  let offsetWidth;
   let scaleObj;
   let style;
   const transformOrigin = 'top left';
