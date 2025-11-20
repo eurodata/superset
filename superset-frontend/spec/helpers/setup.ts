@@ -22,6 +22,7 @@ import './shim';
 import React from 'react';
 import { configure as configureTestingLibrary } from '@testing-library/react';
 import { matchers } from '@emotion/jest';
+import { TextEncoder, TextDecoder } from 'util';
 
 configureTestingLibrary({
   testIdAttribute: 'data-test',
@@ -32,3 +33,5 @@ expect.extend(matchers);
 
 // Allow JSX tests to have React import readily available
 global.React = React;
+(global as any).TextEncoder = TextEncoder;
+(global as any).TextDecoder = TextDecoder;

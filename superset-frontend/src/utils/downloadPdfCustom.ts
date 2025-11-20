@@ -1,0 +1,368 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+// Based on dom-to-image library. We modified it to be able to set the background of the pdf
+// const domToImage = require('dom-to-image');
+import domToImage from 'dom-to-image-more';
+import { jsPDF, jsPDFOptions } from 'jspdf';
+
+const cloneNode = (node: Node, javascriptEnabled?: Boolean): Node => {
+  let child;
+  const clone =
+    node.nodeType === 3
+      ? document.createTextNode(node.nodeValue ?? '')
+      : node.cloneNode(false);
+  child = node.firstChild;
+  while (child) {
+    if (
+      javascriptEnabled === true ||
+      child.nodeType !== 1 ||
+      child.nodeName !== 'SCRIPT'
+    ) {
+      clone.appendChild(cloneNode(child, javascriptEnabled));
+    }
+    child = child.nextSibling;
+  }
+  if (node.nodeType === 1) {
+    if (
+      node.nodeName === 'CANVAS' &&
+      node instanceof HTMLCanvasElement &&
+      clone instanceof HTMLCanvasElement
+    ) {
+      clone.width = node.width;
+      clone.height = node.height;
+      clone.getContext('2d')?.drawImage(node, 0, 0);
+    } else if (
+      node.nodeName === 'TEXTAREA' &&
+      node instanceof HTMLTextAreaElement &&
+      clone instanceof HTMLTextAreaElement
+    ) {
+      clone.value = node.value;
+    } else if (
+      node.nodeName === 'SELECT' &&
+      node instanceof HTMLSelectElement &&
+      clone instanceof HTMLSelectElement
+    ) {
+      clone.value = node.value;
+    }
+    if (node instanceof HTMLElement && clone instanceof HTMLElement)
+      clone.addEventListener(
+        'load',
+        () => {
+          clone.scrollTop = node.scrollTop;
+          clone.scrollLeft = node.scrollLeft;
+        },
+        true,
+      );
+  }
+  return clone;
+};
+
+const createElement = (
+  tagName: string,
+  {
+    className,
+    innerHTML,
+    style,
+  }: {
+    className?: string;
+    innerHTML?: string;
+    style?: Record<string, string | number>;
+  },
+): Element => {
+  const el = document.createElement(tagName);
+  if (className) {
+    el.className = className;
+  }
+  if (innerHTML) {
+    el.innerHTML = innerHTML;
+    const scripts = el.getElementsByTagName('script');
+    for (let i = scripts.length - 1; i >= 0; i -= 1) {
+      scripts[i].parentNode?.removeChild(scripts[i]);
+    }
+  }
+  for (const key in style) {
+    (el.style as any)[key] = style[key];
+  }
+
+  return el;
+};
+
+const isCanvasBlank = (canvas: HTMLCanvasElement, bgColor: string): Boolean => {
+  const blank = document.createElement('canvas');
+  blank.width = canvas.width;
+  blank.height = canvas.height;
+  const ctx = blank.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, blank.width, blank.height);
+  }
+  return canvas.toDataURL() === blank.toDataURL();
+};
+
+interface Image {
+  type: string;
+  quality: number;
+}
+
+interface Options {
+  margin: number;
+  filename: string;
+  image: Image;
+  html2canvas: object;
+  excludeClassNames?: string[];
+  excludeTagNames?: string[];
+  overrideWidth?: number;
+  proxyUrl?: string;
+  compression?: any;
+  scale?: number;
+  pdfBackgroundColor?: string;
+}
+
+const downloadPdfCustom = (
+  dom: Element,
+  options?: Options,
+  cb?: Function,
+): Promise<any> => {
+  const a4Height = 841.89;
+  const a4Width = 595.28;
+  let opts;
+  let scaleObj;
+  let style;
+  const transformOrigin = 'top left';
+  const pdfOptions: jsPDFOptions = {
+    orientation: 'p',
+    unit: 'pt',
+    format: 'a4',
+  };
+
+  const {
+    filename,
+    excludeClassNames = [],
+    excludeTagNames = ['button', 'input', 'select'],
+    overrideWidth,
+    proxyUrl,
+    compression,
+    scale,
+    pdfBackgroundColor = 'white',
+  } = options ?? {};
+
+  /* eslint-disable theme-colors/no-literal-colors */
+  const overlayCSS: any = {
+    position: 'fixed',
+    zIndex: 1000,
+    opacity: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+  };
+  if (overrideWidth) {
+    overlayCSS.width = `${overrideWidth}px`;
+  }
+  /* eslint-disable theme-colors/no-literal-colors */
+  const containerCSS = {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 'auto',
+    margin: 'auto',
+    overflow: 'auto',
+    backgroundColor: 'white',
+  };
+  const overlay = createElement('div', {
+    style: overlayCSS,
+  });
+  const container = createElement('div', {
+    style: containerCSS,
+  });
+  container.appendChild(cloneNode(dom));
+  overlay.appendChild(container);
+  document.body.appendChild(overlay);
+  const innerRatio = a4Height / a4Width;
+  const containerWidth =
+    overrideWidth || container.getBoundingClientRect().width;
+  const pageHeightPx = Math.floor(containerWidth * innerRatio);
+  const elements = container.querySelectorAll('*');
+
+  for (let i = 0, len = excludeClassNames.length; i < len; i += 1) {
+    const clName = excludeClassNames[i];
+    container.querySelectorAll(`.${clName}`).forEach(function (a) {
+      return a.remove();
+    });
+  }
+
+  for (let j = 0, len1 = excludeTagNames.length; j < len1; j += 1) {
+    const tName = excludeTagNames[j];
+    const els = container.getElementsByTagName(tName);
+
+    for (let k = els.length - 1; k >= 0; k -= 1) {
+      if (!els[k]) {
+        continue;
+      }
+      els[k].parentNode?.removeChild(els[k]);
+    }
+  }
+
+  Array.prototype.forEach.call(elements, (el: any): void => {
+    let endPage;
+    let nPages;
+    let pad;
+    let startPage;
+    const rules = {
+      before: false,
+      after: false,
+      avoid: true,
+    };
+    const clientRect = el.getBoundingClientRect();
+    if (rules.avoid && !rules.before) {
+      startPage = Math.floor(clientRect.top / pageHeightPx);
+      endPage = Math.floor(clientRect.bottom / pageHeightPx);
+      nPages = Math.abs(clientRect.bottom - clientRect.top) / pageHeightPx;
+      // Turn on rules.before if the el is broken and is at most one page long.
+      if (endPage !== startPage && nPages <= 1) {
+        rules.before = true;
+      }
+      // Before: Create a padding div to push the element to the next page.
+      if (rules.before) {
+        pad = createElement('div', {
+          style: {
+            display: 'block',
+            height: `${pageHeightPx - (clientRect.top % pageHeightPx)}px`,
+          },
+        });
+        el.parentNode.insertBefore(pad, el);
+      }
+    }
+  });
+
+  // Remove unnecessary elements from result pdf
+  const filterFn = ({ classList, tagName }: any): Boolean => {
+    let cName;
+    let j;
+    let len;
+    if (classList) {
+      for (j = 0, len = excludeClassNames.length; j < len; j += 1) {
+        cName = excludeClassNames[j];
+        if (Array.prototype.indexOf.call(classList, cName) >= 0) {
+          return false;
+        }
+      }
+    }
+    const ref = tagName != null ? tagName.toLowerCase() : undefined;
+    return excludeTagNames.indexOf(ref) < 0;
+  };
+
+  opts = {
+    filter: filterFn,
+    proxy: proxyUrl,
+  };
+
+  if (scale && container instanceof HTMLElement) {
+    const { offsetWidth, offsetHeight } = container;
+    style = {
+      transform: `scale(${scale})`,
+      transformOrigin,
+      width: `${offsetWidth}px`,
+      height: `${offsetHeight}px`,
+    };
+    scaleObj = {
+      width: offsetWidth * scale,
+      height: offsetHeight * scale,
+      quality: 1,
+      style,
+    };
+    opts = Object.assign(opts, scaleObj);
+  }
+
+  return domToImage
+    .toCanvas(container, opts)
+    .then((canvas: any) => {
+      let h;
+      let imgData;
+      let page;
+      let pageHeight;
+      let w;
+      // Remove overlay
+      document.body.removeChild(overlay);
+      // Initialize the PDF.
+      const pdf = new jsPDF(pdfOptions);
+      // Calculate the number of pages.
+      const pxFullHeight = canvas.height;
+      const nPages = Math.ceil(pxFullHeight / pageHeightPx);
+      // Define pageHeight separately so it can be trimmed on the final page.
+      pageHeight = a4Height;
+      const pageCanvas = document.createElement('canvas');
+      const pageCtx = pageCanvas.getContext('2d');
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = pageHeightPx;
+      page = 0;
+      while (page < nPages) {
+        if (page === nPages - 1 && pxFullHeight % pageHeightPx !== 0) {
+          pageCanvas.height = pxFullHeight % pageHeightPx;
+          pageHeight = (pageCanvas.height * a4Width) / pageCanvas.width;
+        }
+        w = pageCanvas.width;
+        h = pageCanvas.height;
+        if (pageCtx) {
+          pageCtx.fillStyle = pdfBackgroundColor;
+          pageCtx.fillRect(0, 0, w, h);
+          pageCtx.drawImage(canvas, 0, page * pageHeightPx, w, h, 0, 0, w, h);
+        }
+        // Don't create blank pages
+        if (isCanvasBlank(pageCanvas, pdfBackgroundColor)) {
+          page += 1;
+          continue;
+        }
+        // Add the page to the PDF.
+        if (page) {
+          pdf.addPage();
+        }
+        pdf.setFillColor(pdfBackgroundColor);
+        pdf.rect(0, 0, a4Width, a4Height, 'F');
+        imgData = pageCanvas.toDataURL('image/PNG');
+        pdf.addImage(
+          imgData,
+          'PNG',
+          0,
+          0,
+          a4Width,
+          pageHeight,
+          undefined,
+          compression,
+        );
+        page += 1;
+      }
+      if (typeof cb === 'function') {
+        cb(pdf);
+      }
+      return pdf.save(filename);
+    })
+    .catch((error: any) => {
+      // Remove overlay
+      document.body.removeChild(overlay);
+      if (typeof cb === 'function') {
+        cb(null);
+      }
+      return console.error(error);
+    });
+};
+
+export default downloadPdfCustom;
