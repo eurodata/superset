@@ -40,6 +40,7 @@ import {
   t,
   TimeseriesChartDataResponseResult,
   NumberFormats,
+  PrefixSuffixFormatter,
 } from '@superset-ui/core';
 import {
   extractExtraMetrics,
@@ -187,6 +188,8 @@ export default function transformProps(
     yAxisBounds,
     yAxisFormat,
     currencyFormat,
+    valueSuffix,
+    valuePrefix,
     yAxisTitle,
     yAxisTitleMargin,
     yAxisTitlePosition,
@@ -292,6 +295,7 @@ export default function transformProps(
   const defaultFormatter = currencyFormat?.symbol
     ? new CurrencyFormatter({ d3Format: yAxisFormat, currency: currencyFormat })
     : getNumberFormatter(yAxisFormat);
+
   const customFormatters = buildCustomFormatters(
     metrics,
     currencyFormats,
@@ -324,6 +328,12 @@ export default function transformProps(
     const seriesName = inverted[entryName] || entryName;
     const colorScaleKey = getOriginalSeries(seriesName, array);
 
+    const metricFormatter = getCustomFormatter(
+      customFormatters,
+      metrics,
+      labelMap?.[seriesName]?.[0],
+    );
+
     const transformedSeries = transformSeries(
       entry,
       colorScale,
@@ -341,11 +351,17 @@ export default function transformProps(
         stack,
         formatter: forcePercentFormatter
           ? percentFormatter
-          : getCustomFormatter(
-              customFormatters,
-              metrics,
-              labelMap?.[seriesName]?.[0],
-            ) ?? defaultFormatter,
+          : metricFormatter
+            ? new PrefixSuffixFormatter({
+                formatter: metricFormatter,
+                prefix: valuePrefix,
+                suffix: valueSuffix,
+              })
+            : new PrefixSuffixFormatter({
+                formatter: defaultFormatter,
+                prefix: valuePrefix,
+                suffix: valueSuffix,
+              }),
         showValue,
         onlyTotal,
         totalStackedValues: sortedTotalValues,
@@ -544,13 +560,17 @@ export default function transformProps(
     minorTick: { show: minorTicks },
     minorSplitLine: { show: minorSplitLine },
     axisLabel: {
-      formatter: getYAxisFormatter(
-        metrics,
-        forcePercentFormatter,
-        customFormatters,
-        defaultFormatter,
-        yAxisFormat,
-      ),
+      formatter: new PrefixSuffixFormatter({
+        formatter: getYAxisFormatter(
+          metrics,
+          forcePercentFormatter,
+          customFormatters,
+          defaultFormatter,
+          yAxisFormat,
+        ),
+        prefix: valuePrefix,
+        suffix: valueSuffix,
+      }),
     },
     scale: truncateYAxis,
     name: yAxisTitle,
@@ -595,10 +615,14 @@ export default function transformProps(
             value.forecastTrend || value.forecastLower || value.forecastUpper,
         );
 
-        const formatter = forcePercentFormatter
+        let formatter = forcePercentFormatter
           ? percentFormatter
           : getCustomFormatter(customFormatters, metrics) ?? defaultFormatter;
-
+        formatter = new PrefixSuffixFormatter({
+          formatter,
+          prefix: valuePrefix,
+          suffix: valueSuffix,
+        });
         const rows: string[][] = [];
         const total = Object.values(forecastValues).reduce(
           (acc, value) =>
