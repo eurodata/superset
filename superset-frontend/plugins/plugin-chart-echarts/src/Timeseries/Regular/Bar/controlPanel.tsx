@@ -223,6 +223,26 @@ function createAxisControl(axis: 'x' | 'y'): ControlSetRow[] {
     ['currency_format'],
     [
       {
+        name: 'value_prefix',
+        config: {
+          ...sharedControls.value_prefix,
+          visibility: ({ controls }: ControlPanelsContainerProps) =>
+            isXAxis ? isHorizontal(controls) : isVertical(controls),
+        },
+      },
+    ],
+    [
+      {
+        name: 'value_suffix',
+        config: {
+          ...sharedControls.value_suffix,
+          visibility: ({ controls }: ControlPanelsContainerProps) =>
+            isXAxis ? isHorizontal(controls) : isVertical(controls),
+        },
+      },
+    ],
+    [
+      {
         name: 'logAxis',
         config: {
           type: 'CheckboxControl',
