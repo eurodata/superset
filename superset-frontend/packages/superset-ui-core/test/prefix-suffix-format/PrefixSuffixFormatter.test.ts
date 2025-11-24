@@ -27,6 +27,7 @@ it('PrefixSuffixFormatter without prefix and suffix', () => {
     formatter: createD3NumberFormatter({ formatString: '.2f' }),
   });
   expect(prefixSuffixFormatter.format(1000)).toBe('1000.00');
+  expect(prefixSuffixFormatter(1000)).toBe('1000.00');
 });
 
 it('PrefixSuffixFormatter with prefix', () => {
@@ -35,6 +36,7 @@ it('PrefixSuffixFormatter with prefix', () => {
     prefix: 'PRE-',
   });
   expect(prefixSuffixFormatter.format(1000)).toBe('PRE-1000.00');
+  expect(prefixSuffixFormatter(1000)).toBe('PRE-1000.00');
 });
 
 it('PrefixSuffixFormatter suffix', () => {
@@ -43,6 +45,7 @@ it('PrefixSuffixFormatter suffix', () => {
     suffix: '-SUF',
   });
   expect(prefixSuffixFormatter.format(1000)).toBe('1000.00-SUF');
+  expect(prefixSuffixFormatter(1000)).toBe('1000.00-SUF');
 });
 
 it('PrefixSuffixFormatter with prefix and suffix', () => {
@@ -52,4 +55,5 @@ it('PrefixSuffixFormatter with prefix and suffix', () => {
     suffix: '-SUF',
   });
   expect(prefixSuffixFormatter.format(1000)).toBe('PRE-1000.00-SUF');
+  expect(prefixSuffixFormatter(1000)).toBe('PRE-1000.00-SUF');
 });
