@@ -37,25 +37,45 @@ export default function DownloadAsPdf({
   const { addDangerToast } = useToasts();
   const onDownloadPdf = async (e: SyntheticEvent) => {
     try {
-      let pdfBackgroundColor = 'white';
-      const dashboardContent = document.querySelector('.dashboard-content');
-      if (dashboardContent) {
-        const dashboardContentStyle = window.getComputedStyle(dashboardContent);
-        const hexRegex = /^#(?:[A-Fa-f0-9]{3}){1,2}$/;
-        const rgbRegex =
-          /^rgb[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*(?:,(?![)])|(?=[)]))){3}[)]$/;
-        if (
-          hexRegex.test(dashboardContentStyle.backgroundColor) ||
-          rgbRegex.test(dashboardContentStyle.backgroundColor)
-        ) {
-          pdfBackgroundColor = dashboardContentStyle.backgroundColor;
+      const pdfBackgroundColor = 'white';
+      // const dashboardContent = document.querySelector('.dashboard-content');
+      // if (dashboardContent) {
+      //   const dashboardContentStyle = window.getComputedStyle(dashboardContent);
+      //   const hexRegex = /^#(?:[A-Fa-f0-9]{3}){1,2}$/;
+      //   const rgbRegex =
+      //     /^rgb[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*(?:,(?![)])|(?=[)]))){3}[)]$/;
+      //   if (
+      //     hexRegex.test(dashboardContentStyle.backgroundColor) ||
+      //     rgbRegex.test(dashboardContentStyle.backgroundColor)
+      //   ) {
+      //     pdfBackgroundColor = dashboardContentStyle.backgroundColor;
+      //   }
+      // }
+      const isNotLastElement = (el: HTMLElement) => {
+        if (!el.classList.contains('dragdroppable-row')) {
+          return false;
         }
-      }
+
+        const header = el.querySelector(
+          '.dashboard-component.dashboard-component-header.header-style-option',
+        );
+        return !!header;
+      };
+
+      const modifyClone = (cloneRoot: HTMLElement) => {
+        const dashboardContent = cloneRoot.querySelector('.dashboard-content');
+        if (dashboardContent instanceof HTMLElement) {
+          dashboardContent.style.backgroundColor = 'white';
+        }
+      };
+
       downloadAsPdf(
         SCREENSHOT_NODE_SELECTOR,
         dashboardTitle,
         true,
         pdfBackgroundColor,
+        isNotLastElement,
+        modifyClone,
       )(e);
     } catch (error) {
       logging.error(error);

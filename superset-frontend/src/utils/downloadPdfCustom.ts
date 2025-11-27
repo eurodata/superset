@@ -132,6 +132,8 @@ interface Options {
   compression?: any;
   scale?: number;
   pdfBackgroundColor?: string;
+  isNotLastElement?: (el: HTMLElement) => boolean;
+  modifyClone?: (cloneRoot: HTMLElement) => void;
 }
 
 const downloadPdfCustom = (
@@ -151,6 +153,9 @@ const downloadPdfCustom = (
     format: 'a4',
   };
 
+  const defaultIsNotLastElement = (el: HTMLElement): boolean => false;
+  const defaultModifyClone = (cloneRoot: HTMLElement) => {};
+
   const {
     filename,
     excludeClassNames = [],
@@ -160,6 +165,8 @@ const downloadPdfCustom = (
     compression,
     scale,
     pdfBackgroundColor = 'white',
+    isNotLastElement = defaultIsNotLastElement,
+    modifyClone = defaultModifyClone,
   } = options ?? {};
 
   /* eslint-disable theme-colors/no-literal-colors */
@@ -200,6 +207,9 @@ const downloadPdfCustom = (
   const containerWidth =
     overrideWidth || container.getBoundingClientRect().width;
   const pageHeightPx = Math.floor(containerWidth * innerRatio);
+  if (container instanceof HTMLElement) {
+    modifyClone(container);
+  }
   const elements = container.querySelectorAll('*');
 
   for (let i = 0, len = excludeClassNames.length; i < len; i += 1) {
@@ -248,7 +258,26 @@ const downloadPdfCustom = (
             height: `${pageHeightPx - (clientRect.top % pageHeightPx)}px`,
           },
         });
-        el.parentNode.insertBefore(pad, el);
+        const prevEl = el.previousElementSibling;
+
+        if (!isNotLastElement(prevEl)) {
+          pad = createElement('div', {
+            style: {
+              display: 'block',
+              height: `${pageHeightPx - (clientRect.top % pageHeightPx)}px`,
+            },
+          });
+          el.parentNode.insertBefore(pad, el);
+        } else {
+          const prevClientRect = prevEl.getBoundingClientRect();
+          pad = createElement('div', {
+            style: {
+              display: 'block',
+              height: `${pageHeightPx - (prevClientRect.top % pageHeightPx)}px`,
+            },
+          });
+          prevEl.parentNode.insertBefore(pad, prevEl);
+        }
       }
     }
   });

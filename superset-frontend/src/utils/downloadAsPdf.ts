@@ -46,6 +46,8 @@ export default function downloadAsPdf(
   description: string,
   isExactSelector = false,
   pdfBackgroundColor = 'white',
+  isNotLastElement?: (el: HTMLElement) => boolean,
+  modifyClone?: (cloneRoot: HTMLElement) => void,
 ) {
   return (event: SyntheticEvent) => {
     const elementToPrint = isExactSelector
@@ -65,6 +67,8 @@ export default function downloadAsPdf(
       html2canvas: { scale: 2 },
       excludeClassNames: ['header-controls'],
       pdfBackgroundColor,
+      isNotLastElement,
+      modifyClone,
     };
     return domToPdfCustom(elementToPrint, options)
       .then(() => {
