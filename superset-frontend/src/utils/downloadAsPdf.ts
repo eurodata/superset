@@ -58,6 +58,17 @@ export default function downloadAsPdf(
       );
     }
 
+    const isNotLastElement = (el: HTMLElement) => {
+      if (!el.classList.contains('dragdroppable-row')) {
+        return false;
+      }
+
+      const header = el.querySelector(
+        '.dashboard-component.dashboard-component-header.header-style-option',
+      );
+      return !!header;
+    };
+
     const options = {
       margin: 10,
       filename: `${generateFileStem(description)}.pdf`,
@@ -65,6 +76,7 @@ export default function downloadAsPdf(
       html2canvas: { scale: 2 },
       excludeClassNames: ['header-controls'],
       pdfBackgroundColor,
+      isNotLastElement,
     };
     return domToPdfCustom(elementToPrint, options)
       .then(() => {

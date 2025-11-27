@@ -132,6 +132,7 @@ interface Options {
   compression?: any;
   scale?: number;
   pdfBackgroundColor?: string;
+  isNotLastElement?: (el: Element | null) => boolean;
 }
 
 const downloadPdfCustom = (
@@ -151,6 +152,8 @@ const downloadPdfCustom = (
     format: 'a4',
   };
 
+  const defaultIsNotLastElement = (el: Element | null): boolean => false;
+
   const {
     filename,
     excludeClassNames = [],
@@ -160,6 +163,7 @@ const downloadPdfCustom = (
     compression,
     scale,
     pdfBackgroundColor = 'white',
+    isNotLastElement = defaultIsNotLastElement,
   } = options ?? {};
 
   /* eslint-disable theme-colors/no-literal-colors */
@@ -248,7 +252,26 @@ const downloadPdfCustom = (
             height: `${pageHeightPx - (clientRect.top % pageHeightPx)}px`,
           },
         });
-        el.parentNode.insertBefore(pad, el);
+        const prevEl = el.previousElementSibling;
+
+        if (!isNotLastElement(prevEl)) {
+          pad = createElement('div', {
+            style: {
+              display: 'block',
+              height: `${pageHeightPx - (clientRect.top % pageHeightPx)}px`,
+            },
+          });
+          el.parentNode.insertBefore(pad, el);
+        } else {
+          const prevClientRect = prevEl.getBoundingClientRect();
+          pad = createElement('div', {
+            style: {
+              display: 'block',
+              height: `${pageHeightPx - (prevClientRect.top % pageHeightPx)}px`,
+            },
+          });
+          prevEl.parentNode.insertBefore(pad, prevEl);
+        }
       }
     }
   });
