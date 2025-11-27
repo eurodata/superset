@@ -132,7 +132,8 @@ interface Options {
   compression?: any;
   scale?: number;
   pdfBackgroundColor?: string;
-  isNotLastElement?: (el: Element | null) => boolean;
+  isNotLastElement?: (el: HTMLElement) => boolean;
+  modifyClone?: (cloneRoot: HTMLElement) => void;
 }
 
 const downloadPdfCustom = (
@@ -152,7 +153,8 @@ const downloadPdfCustom = (
     format: 'a4',
   };
 
-  const defaultIsNotLastElement = (el: Element | null): boolean => false;
+  const defaultIsNotLastElement = (el: HTMLElement): boolean => false;
+  const defaultModifyClone = (cloneRoot: HTMLElement) => {};
 
   const {
     filename,
@@ -164,6 +166,7 @@ const downloadPdfCustom = (
     scale,
     pdfBackgroundColor = 'white',
     isNotLastElement = defaultIsNotLastElement,
+    modifyClone = defaultModifyClone,
   } = options ?? {};
 
   /* eslint-disable theme-colors/no-literal-colors */
@@ -204,6 +207,9 @@ const downloadPdfCustom = (
   const containerWidth =
     overrideWidth || container.getBoundingClientRect().width;
   const pageHeightPx = Math.floor(containerWidth * innerRatio);
+  if (container instanceof HTMLElement) {
+    modifyClone(container);
+  }
   const elements = container.querySelectorAll('*');
 
   for (let i = 0, len = excludeClassNames.length; i < len; i += 1) {
