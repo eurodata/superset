@@ -658,12 +658,19 @@ COMMON_BOOTSTRAP_OVERRIDES_FUNC: Callable[  # noqa: E731
 EXTRA_CATEGORICAL_COLOR_SCHEMES: list[dict[str, Any]] = []
 EXTRA_CATEGORICAL_COLOR_SCHEMES = [
     {
-        "id": 'eurodata_1',
-        "description": '',
-        "label": 'Eurodata Standard',
+        "id": "eurodata_1",
+        "description": "",
+        "label": "Eurodata Standard",
         "isDefault": True,
-        "colors":
-         ['#005c70', '#8fc7d4', '#E6BA00', '#8fc7d4', '#cc4f00',  '#005c70', '#761053']
+        "colors": [
+            "#005c70",
+            "#8fc7d4",
+            "#E6BA00",
+            "#8fc7d4",
+            "#cc4f00",
+            "#005c70",
+            "#761053",
+        ],
     }
 ]
 
