@@ -394,7 +394,10 @@ LANGUAGES = {
 }
 # Turning off i18n by default as translation in most languages are
 # incomplete and not well maintained.
-LANGUAGES = {}
+LANGUAGES = {
+    "en": {"flag": "us", "name": "English"},
+    "de": {"flag": "de", "name": "German"},
+}
 
 
 # Override the default d3 locale format
@@ -534,7 +537,7 @@ DEFAULT_FEATURE_FLAGS: dict[str, bool] = {
     "DRILL_TO_DETAIL": True,
     "DRILL_BY": True,
     "DATAPANEL_CLOSED_BY_DEFAULT": False,
-    "HORIZONTAL_FILTER_BAR": False,
+    "HORIZONTAL_FILTER_BAR": True,
     # The feature is off by default, and currently only supported in Presto and Postgres,
     # and Bigquery.
     # It also needs to be enabled on a per-database basis, by adding the key/value pair
