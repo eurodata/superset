@@ -17,24 +17,22 @@
  * under the License.
  */
 
-import prettyMilliseconds, { Options } from 'pretty-ms';
-import NumberFormatter from '../NumberFormatter';
+import { NumberFormatter } from '@superset-ui/core';
 
-export default function createDurationFormatter(
-  config: {
-    description?: string;
-    id?: string;
-    label?: string;
-    multiplier?: number;
-  } & Options = {},
-) {
-  const { description, id, label, multiplier = 1, ...prettyMsOptions } = config;
+const durationHHMMFormatter = new NumberFormatter({
+  description: 'Duration as HH:MM from milliseconds',
+  formatFunc: milliseconds => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
 
-  return new NumberFormatter({
-    description,
-    formatFunc: value =>
-      prettyMilliseconds(value * multiplier, prettyMsOptions),
-    id: id ?? 'duration_format',
-    label: label ?? `Duration formatter`,
-  });
-}
+    const hh = String(hours).padStart(2, '0');
+    const mm = String(minutes).padStart(2, '0');
+    return `${hh}:${mm}`;
+  },
+  id: 'duration_format_hhmm',
+  label: `Duration formatter HHMM`,
+});
+
+export default durationHHMMFormatter;
