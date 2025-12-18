@@ -31,7 +31,7 @@ import {
 } from '@superset-ui/core';
 import { FormatLocaleDefinition } from 'd3-format';
 import { TimeLocaleDefinition } from 'd3-time-format';
-import durationHHMMFormatter from '../utils/durationHHMMFormatter';
+import createDurationHHMMFormatter from '../utils/createDurationHHMMFormatter';
 
 export default function setupFormatters(
   d3NumberFormat: Partial<FormatLocaleDefinition>,
@@ -78,7 +78,11 @@ export default function setupFormatters(
       'DURATION_SUB',
       createDurationFormatter({ formatSubMilliseconds: true }),
     )
-    .registerValue('DURATION_HHMM', durationHHMMFormatter);
+    .registerValue('DURATION_HHMM_MS', createDurationHHMMFormatter())
+    .registerValue(
+      'DURATION_HHMM_H',
+      createDurationHHMMFormatter({ multiplier: 3600000 }),
+    );
 
   const timeFormatterRegistry = getTimeFormatterRegistry();
 

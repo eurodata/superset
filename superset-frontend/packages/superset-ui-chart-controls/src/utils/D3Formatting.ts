@@ -57,7 +57,8 @@ export const D3_FORMAT_OPTIONS: [string, string][] = [
   ...d3Formatted,
   ['DURATION', t('Duration in ms (66000 => 1m 6s)')],
   ['DURATION_SUB', t('Duration in ms (1.40008 => 1ms 400µs 80ns)')],
-  ['DURATION_HHMM', t('Duration in ms as HH:MM (91800000 => 25:30)')],
+  ['DURATION_HHMM_MS', t('Duration in ms as HH:MM (91800000 => 25:30)')],
+  ['DURATION_HHMM_H', t('Duration in h as HH:MM (25.5 => 25:30)')],
 ];
 
 export const D3_TIME_FORMAT_DOCS = t(

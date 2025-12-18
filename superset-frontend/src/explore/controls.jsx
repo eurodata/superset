@@ -88,6 +88,7 @@ export const D3_FORMAT_OPTIONS = [
   ['DURATION', t('Duration in ms (66000 => 1m 6s)')],
   ['DURATION_SUB', t('Duration in ms (100.40008 => 100ms 400µs 80ns)')],
   ['DURATION_HHMM', t('Duration in ms as HH:MM (91800000 => 25:30)')],
+  ['DURATION_HHMM_H', t('Duration in h as HH:MM (25.5 => 25:30)')],
 ];
 
 const ROW_LIMIT_OPTIONS = [10, 50, 100, 250, 500, 1000, 5000, 10000, 50000];
