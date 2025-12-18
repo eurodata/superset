@@ -19,20 +19,27 @@
 
 import { NumberFormatter } from '@superset-ui/core';
 
-const durationHHMMFormatter = new NumberFormatter({
-  description: 'Duration as HH:MM from milliseconds',
-  formatFunc: milliseconds => {
-    const totalSeconds = Math.floor(milliseconds / 1000);
-    const totalMinutes = Math.floor(totalSeconds / 60);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
+export default function createDurationHHMMFormatter(
+  config: {
+    multiplier?: number;
+  } = {},
+) {
+  const { multiplier = 1 } = config;
 
-    const hh = String(hours).padStart(2, '0');
-    const mm = String(minutes).padStart(2, '0');
-    return `${hh}:${mm}`;
-  },
-  id: 'duration_format_hhmm',
-  label: `Duration formatter HHMM`,
-});
+  return new NumberFormatter({
+    description: 'Duration as HH:MM from milliseconds',
+    formatFunc: value => {
+      const milliseconds = value * multiplier;
+      const totalSeconds = Math.floor(milliseconds / 1000);
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
 
-export default durationHHMMFormatter;
+      const hh = String(hours).padStart(2, '0');
+      const mm = String(minutes).padStart(2, '0');
+      return `${hh}:${mm}`;
+    },
+    id: 'duration_format_hhmm',
+    label: `Duration formatter HHMM`,
+  });
+}
