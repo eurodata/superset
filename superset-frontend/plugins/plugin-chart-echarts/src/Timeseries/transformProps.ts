@@ -565,7 +565,9 @@ export default function transformProps(
           metrics,
           forcePercentFormatter,
           customFormatters,
-          defaultFormatter,
+          yAxisFormat === 'DURATION_HHMM_H'
+            ? getNumberFormatter('SMART_NUMBER')
+            : defaultFormatter,
           yAxisFormat,
         ),
         prefix: valuePrefix,
@@ -623,6 +625,7 @@ export default function transformProps(
           prefix: valuePrefix,
           suffix: valueSuffix,
         });
+
         const rows: string[][] = [];
         const total = Object.values(forecastValues).reduce(
           (acc, value) =>
