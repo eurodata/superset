@@ -17,22 +17,21 @@
  * under the License.
  */
 
-import { FC, memo, useEffect, useState } from 'react';
+import { FC, memo } from 'react';
 import {
   DataMaskStateWithId,
-  DataMaskWithId,
   FeatureFlag,
   isFeatureEnabled,
   JsonObject,
   styled,
   t,
-  fetchTimeRange,
 } from '@superset-ui/core';
 import Icons from 'src/components/Icons';
 import Loading from 'src/components/Loading';
 import { DashboardLayout, RootState } from 'src/dashboard/types';
 import { useSelector } from 'react-redux';
-import getBootstrapData from 'src/utils/getBootstrapData';
+import { TimeRangeDisplay } from 'src/dashboard/components/timeRangeStyles';
+import { useTimeRangeText } from 'src/hooks/useTimeRangeText';
 import FilterControls from './FilterControls/FilterControls';
 import { useChartsVerboseMaps, getFilterBarTestId } from './utils';
 import { HorizontalBarProps } from './types';
@@ -40,29 +39,7 @@ import FilterBarSettings from './FilterBarSettings';
 import FilterConfigurationLink from './FilterConfigurationLink';
 import crossFiltersSelector from './CrossFilters/selectors';
 
-const formatTimeRangeText = (range = '') => {
-  const regex = /(\d{4}-\d{2}-\d{2}) ≤ col < (\d{4}-\d{2}-\d{2})/;
-  const match = range.match(regex);
-  if (!match) return '';
-  const [, start, end] = match;
-
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  endDate.setDate(endDate.getDate() - 1);
-
-  const { locale } = getBootstrapData().common;
-  return `${startDate.toLocaleDateString(
-    locale,
-  )} – ${endDate.toLocaleDateString(locale)}`;
-};
-
-const TimeRangeDisplay = styled.div`
-  ${({ theme }) => `
-    color: ${theme.colors.grayscale.light5};
-  `}
-`;
-
-const HorizontalBar = styled.div`
+export const HorizontalBar = styled.div`
   ${({ theme }) => `
     padding: ${theme.gridUnit * 3}px ${theme.gridUnit * 2}px ${
       theme.gridUnit * 3
@@ -72,7 +49,7 @@ const HorizontalBar = styled.div`
   `}
 `;
 
-const HorizontalBarContent = styled.div`
+export const HorizontalBarContent = styled.div`
   ${({ theme }) => `
     display: flex;
     flex-direction: row;
@@ -144,18 +121,6 @@ const HorizontalFilterBar: FC<HorizontalBarProps> = ({
   );
   const verboseMaps = useChartsVerboseMaps();
 
-  const [timeRangeText, setTimeRangeText] = useState('');
-
-  useEffect(() => {
-    const timeRange = Object.values(dataMask).find(
-      (filter: DataMaskWithId) => filter.extraFormData?.time_range,
-    )?.extraFormData?.time_range;
-
-    fetchTimeRange(timeRange ?? 'Last year').then(({ value }) => {
-      setTimeRangeText(formatTimeRangeText(value));
-    });
-  }, [dataMask]);
-
   const selectedCrossFilters = isCrossFiltersEnabled
     ? crossFiltersSelector({
         dataMask,
@@ -165,6 +130,8 @@ const HorizontalFilterBar: FC<HorizontalBarProps> = ({
       })
     : [];
   const hasFilters = filterValues.length > 0 || selectedCrossFilters.length > 0;
+
+  const timeRangeText = useTimeRangeText('Last year');
 
   return (
     <HorizontalBar {...getFilterBarTestId()}>
