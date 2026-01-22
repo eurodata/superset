@@ -17,10 +17,9 @@
  * under the License.
  */
 
-import { FC, memo, useEffect, useState } from 'react';
+import { FC, memo } from 'react';
 import {
   DataMaskStateWithId,
-  DataMaskWithId,
   FeatureFlag,
   isFeatureEnabled,
   JsonObject,
