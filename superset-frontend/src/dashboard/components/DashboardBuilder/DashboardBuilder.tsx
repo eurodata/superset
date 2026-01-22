@@ -81,6 +81,7 @@ import { getRootLevelTabsComponent, shouldFocusTabs } from './utils';
 import DashboardContainer from './DashboardContainer';
 import { useNativeFilters } from './state';
 import DashboardWrapper from './DashboardWrapper';
+import TimeRangeTopBar from '../TimeRangeTopBar';
 
 type DashboardBuilderProps = {};
 
@@ -526,6 +527,9 @@ const DashboardBuilder: FC<DashboardBuilderProps> = () => {
     ({ dropIndicatorProps }: { dropIndicatorProps: JsonObject }) => (
       <div>
         {!hideDashboardHeader && <DashboardHeader />}
+        {filterBarOrientation === FilterBarOrientation.Vertical && (
+            <TimeRangeTopBar defaultTimeRange='Last year'/>
+          )}
         {showFilterBar &&
           filterBarOrientation === FilterBarOrientation.Horizontal && (
             <FilterBar
