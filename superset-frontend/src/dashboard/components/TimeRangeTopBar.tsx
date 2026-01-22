@@ -17,23 +17,26 @@
  * under the License.
  */
 import { FC } from 'react';
-import { HorizontalBar, HorizontalBarContent } from './nativeFilters/FilterBar/Horizontal';
-import { TimeRangeDisplay } from './timeRangeStyles';
 import { useTimeRangeText } from 'src/hooks/useTimeRangeText';
+import {
+  HorizontalBar,
+  HorizontalBarContent,
+} from './nativeFilters/FilterBar/Horizontal';
+import { TimeRangeDisplay } from './timeRangeStyles';
 
 type Props = {
   defaultTimeRange?: string;
 };
 
 const TimeRangeTopBar: FC<Props> = ({ defaultTimeRange }) => {
-    const timeRangeText = useTimeRangeText(defaultTimeRange);
+  const timeRangeText = useTimeRangeText(defaultTimeRange);
   return (
-      <HorizontalBar>
-        <HorizontalBarContent>
-            <TimeRangeDisplay>{timeRangeText}</TimeRangeDisplay>
-        </HorizontalBarContent>
-      </HorizontalBar>
-    );
-}
+    <HorizontalBar>
+      <HorizontalBarContent>
+        <TimeRangeDisplay>{timeRangeText}</TimeRangeDisplay>
+      </HorizontalBarContent>
+    </HorizontalBar>
+  );
+};
 
 export default TimeRangeTopBar;

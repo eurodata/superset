@@ -31,14 +31,14 @@ import Icons from 'src/components/Icons';
 import Loading from 'src/components/Loading';
 import { DashboardLayout, RootState } from 'src/dashboard/types';
 import { useSelector } from 'react-redux';
+import { TimeRangeDisplay } from 'src/dashboard/components/timeRangeStyles';
+import { useTimeRangeText } from 'src/hooks/useTimeRangeText';
 import FilterControls from './FilterControls/FilterControls';
 import { useChartsVerboseMaps, getFilterBarTestId } from './utils';
 import { HorizontalBarProps } from './types';
 import FilterBarSettings from './FilterBarSettings';
 import FilterConfigurationLink from './FilterConfigurationLink';
 import crossFiltersSelector from './CrossFilters/selectors';
-import { TimeRangeDisplay } from 'src/dashboard/components/timeRangeStyles';
-import { useTimeRangeText } from 'src/hooks/useTimeRangeText';
 
 export const HorizontalBar = styled.div`
   ${({ theme }) => `

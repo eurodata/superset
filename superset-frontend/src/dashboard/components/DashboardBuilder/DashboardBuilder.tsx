@@ -528,8 +528,8 @@ const DashboardBuilder: FC<DashboardBuilderProps> = () => {
       <div>
         {!hideDashboardHeader && <DashboardHeader />}
         {filterBarOrientation === FilterBarOrientation.Vertical && (
-            <TimeRangeTopBar defaultTimeRange='Last year'/>
-          )}
+          <TimeRangeTopBar defaultTimeRange="Last year" />
+        )}
         {showFilterBar &&
           filterBarOrientation === FilterBarOrientation.Horizontal && (
             <FilterBar
