@@ -22,5 +22,6 @@ export const TimeRangeDisplay = styled.div`
   ${({ theme }) => `
     color: ${theme.colors.grayscale.light5};
     margin-left: auto;
+    padding: 0.6rem;
   `}
 `;
