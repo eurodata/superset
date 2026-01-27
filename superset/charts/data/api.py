@@ -382,31 +382,34 @@ class ChartDataRestApi(ChartRestApi):
             if form_data.get("show_totals") and len(result["queries"]) == 2:
                 # For CSV: Append summary query result at correct position
                 if is_csv_format:
-                    main_reader = csv.reader(io.StringIO(result["queries"][0]["data"]))
 
-                    main_header = next(main_reader)
-                    combined_rows = list(main_reader)
+                    def _merge_csv(main_csv: str, summary_csv: str) -> str:
+                        main_reader = csv.reader(io.StringIO(main_csv))
 
-                    summary_reader = csv.DictReader(
-                        io.StringIO(result["queries"][1]["data"])
-                    )
+                        main_header = next(main_reader)
+                        combined_rows = list(main_reader)
 
-                    for row in summary_reader:
-                        new_row = []
-                        for col in main_header:
-                            new_row.append(row.get(col, ""))
-                        combined_rows.append(new_row)
+                        summary_reader = csv.DictReader(io.StringIO(summary_csv))
 
-                    out = io.StringIO()
-                    writer = csv.writer(out)
+                        for row in summary_reader:
+                            new_row = []
+                            for col in main_header:
+                                new_row.append(row.get(col, ""))
+                            combined_rows.append(new_row)
 
-                    writer.writerow(main_header)
-                    writer.writerows(combined_rows)
+                        out = io.StringIO()
+                        writer = csv.writer(out)
 
-                    combined_data = out.getvalue()
+                        writer.writerow(main_header)
+                        writer.writerows(combined_rows)
+
+                        return out.getvalue()
 
                     return CsvResponse(
-                        combined_data, headers=generate_download_headers("csv")
+                        _merge_csv(
+                            result["queries"][0]["data"], result["queries"][1]["data"]
+                        ),
+                        headers=generate_download_headers("csv"),
                     )
                 # For Excel: Return only first file. It was changed to append formulas.
                 return XlsxResponse(
