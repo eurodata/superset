@@ -58,6 +58,9 @@ from superset.views.base_api import statsd_metrics
 if TYPE_CHECKING:
     from superset.common.query_context import QueryContext
 
+import csv
+import io
+
 logger = logging.getLogger(__name__)
 
 
@@ -375,6 +378,43 @@ class ChartDataRestApi(ChartRestApi):
                     return CsvResponse(data, headers=generate_download_headers("csv"))
 
                 return XlsxResponse(data, headers=generate_download_headers("xlsx"))
+
+
+            # Return only one file for tables having summary row (two query request)
+            if form_data.get("show_totals") and len(result["queries"]) == 2:
+                # For CSV: Append summary query result at correct position
+                if is_csv_format:
+                    main_csv = result["queries"][0]["data"]
+                    main_file = io.StringIO(main_csv)
+                    main_reader = csv.reader(main_file)
+
+                    main_header = next(main_reader)
+                    combined_rows = list(main_reader)
+
+                    summary_csv = result["queries"][1]["data"]
+                    summary_file = io.StringIO(summary_csv)
+                    summary_reader = csv.DictReader(summary_file)
+
+                    for row in summary_reader:
+                        new_row = []
+                        for col in main_header:
+                            new_row.append(row.get(col, ""))
+                        combined_rows.append(new_row)
+
+                    out = io.StringIO()
+                    writer = csv.writer(out)
+
+                    writer.writerow(main_header)
+                    writer.writerows(combined_rows)
+
+                    combined_data = out.getvalue()
+
+                    return CsvResponse(
+                        combined_data,
+                        headers=generate_download_headers("csv")
+                    )
+                # For Excel: Return only first file. It was changed to append formulas.
+                return XlsxResponse(result["queries"][0]["data"], headers=generate_download_headers("xlsx"))
 
             # return multi-query results bundled as a zip file
             def _process_data(query_data: Any) -> Any:

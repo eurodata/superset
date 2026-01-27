@@ -18,17 +18,69 @@ import io
 from typing import Any
 
 import pandas as pd
-
 from superset.utils.core import GenericDataType
 
+def column_number_to_letter(column_number: int) -> str:
+    start_index = 0
+    letter = ''
+    while column_number > 25 + start_index:
+        letter += chr(65 + int((column_number-start_index)/26) - 1)
+        column_number = column_number - (int((column_number-start_index)/26))*26
+    letter += chr(65 - start_index + (int(column_number)))
+    return letter
 
-def df_to_excel(df: pd.DataFrame, **kwargs: Any) -> Any:
+def get_function_num(aggregate: str, ignore_hidden_rows = True) -> int:
+    function_num = None
+    # COUNT_DISTINCT not possible for subtotal
+    match aggregate:
+        case "SUM":
+            function_num = 9 + (0, 100)[ignore_hidden_rows]
+        case "AVG":
+            function_num = 1 + (0, 100)[ignore_hidden_rows]
+        case "COUNT":
+            function_num = 2 + (0, 100)[ignore_hidden_rows]
+        case "MAX":
+            function_num = 4 + (0, 100)[ignore_hidden_rows]
+        case "MIN":
+            function_num = 5 + (0, 100)[ignore_hidden_rows]
+    return function_num
+
+def df_to_excel(df: pd.DataFrame, summary_specs: list[dict[str, str]] | None = None, **kwargs: Any) -> Any:
     output = io.BytesIO()
 
     # pylint: disable=abstract-class-instantiated
     with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
         df.to_excel(writer, **kwargs)
 
+        if not summary_specs:
+            return output.getvalue()
+
+        workbook  = writer.book
+        worksheet = writer.sheets['Sheet1']
+
+        rows, cols = df.shape
+        summary_row = rows + 1
+
+        index_format = workbook.add_format({
+            "bold": True,
+            "align": "center",
+            "valign": "top",
+            "top": 1,
+            "bottom": 1,
+            "left": 1,
+            "right": 1,
+        })
+        worksheet.write(summary_row, 0, "Summary", index_format)
+        for spec in summary_specs:
+            aggregate = spec.get("aggregate")
+            label = spec.get("label")
+            column_index = df.columns.get_loc(label) + 1
+            column_letter = column_number_to_letter(column_index)
+            function_num = get_function_num(aggregate, True)
+            if not function_num:
+                continue
+            formula = f"=SUBTOTAL({function_num},{column_letter}2:{column_letter}{rows + 1})"
+            worksheet.write_formula(rows + 1, column_index, formula)
     return output.getvalue()
 
 
