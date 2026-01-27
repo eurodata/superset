@@ -19,6 +19,8 @@ from __future__ import annotations
 import contextlib
 import logging
 from typing import Any, TYPE_CHECKING
+import csv
+import io
 
 from flask import current_app, g, make_response, request, Response
 from flask_appbuilder.api import expose, protect
@@ -58,11 +60,7 @@ from superset.views.base_api import statsd_metrics
 if TYPE_CHECKING:
     from superset.common.query_context import QueryContext
 
-import csv
-import io
-
 logger = logging.getLogger(__name__)
-
 
 class ChartDataRestApi(ChartRestApi):
     include_route_methods = {"get_data", "data", "data_from_cache"}
@@ -383,16 +381,12 @@ class ChartDataRestApi(ChartRestApi):
             if form_data.get("show_totals") and len(result["queries"]) == 2:
                 # For CSV: Append summary query result at correct position
                 if is_csv_format:
-                    main_csv = result["queries"][0]["data"]
-                    main_file = io.StringIO(main_csv)
-                    main_reader = csv.reader(main_file)
+                    main_reader = csv.reader(io.StringIO(result["queries"][0]["data"]))
 
                     main_header = next(main_reader)
                     combined_rows = list(main_reader)
 
-                    summary_csv = result["queries"][1]["data"]
-                    summary_file = io.StringIO(summary_csv)
-                    summary_reader = csv.DictReader(summary_file)
+                    summary_reader = csv.DictReader(io.StringIO(result["queries"][1]["data"]))
 
                     for row in summary_reader:
                         new_row = []
