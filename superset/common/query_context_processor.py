@@ -671,7 +671,9 @@ class QueryContextProcessor:
                     df, index=include_index, **config["CSV_EXPORT"]
                 )
             elif self._query_context.result_format == ChartDataResultFormat.XLSX:
-                summary_specs = extract_summary_specs(self._query_context.form_data)
+                summary_specs = extract_summary_specs(
+                    self._query_context.form_data or {}
+                )
                 excel.apply_column_types(df, coltypes)
                 result = excel.df_to_excel(df, summary_specs, **config["EXCEL_EXPORT"])
             return result or ""

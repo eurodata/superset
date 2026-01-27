@@ -378,6 +378,8 @@ class ChartDataRestApi(ChartRestApi):
 
                 return XlsxResponse(data, headers=generate_download_headers("xlsx"))
 
+            form_data = form_data or {}
+
             # Return only one file for tables having summary row (two query request)
             if form_data.get("show_totals") and len(result["queries"]) == 2:
                 # For CSV: Append summary query result at correct position

@@ -32,7 +32,9 @@ def column_number_to_letter(column_number: int) -> str:
     return letter
 
 
-def get_function_num(aggregate: str, ignore_hidden_rows=True) -> int:
+def get_function_num(
+    aggregate: Optional[str], ignore_hidden_rows: bool = True
+) -> Optional[int]:
     function_num = None
     # COUNT_DISTINCT not possible for subtotal
     if aggregate == "SUM":
@@ -48,7 +50,9 @@ def get_function_num(aggregate: str, ignore_hidden_rows=True) -> int:
     return function_num
 
 
-def write_summary_formula(worksheet, spec, df, summary_row):
+def write_summary_formula(
+    worksheet: Any, spec: dict[str, str], df: pd.Dataframe, summary_row: int
+) -> None:
     aggregate = spec.get("aggregate")
     label = spec.get("label")
     column_index = df.columns.get_loc(label) + 1
