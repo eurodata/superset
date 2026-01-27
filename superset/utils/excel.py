@@ -48,6 +48,19 @@ def get_function_num(aggregate: str, ignore_hidden_rows=True) -> int:
     return function_num
 
 
+def write_summary_formula(worksheet, spec, df, summary_row):
+    aggregate = spec.get("aggregate")
+    label = spec.get("label")
+    column_index = df.columns.get_loc(label) + 1
+    column_letter = column_number_to_letter(column_index)
+    function_num = get_function_num(aggregate, True)
+    if function_num:
+        formula = (
+            f"=SUBTOTAL({function_num},{column_letter}2:{column_letter}{summary_row})"
+        )
+        worksheet.write_formula(summary_row, column_index, formula)
+
+
 def df_to_excel(
     df: pd.DataFrame,
     summary_specs: Optional[list[dict[str, str]]] = None,
@@ -63,7 +76,7 @@ def df_to_excel(
             workbook = writer.book
             worksheet = writer.sheets["Sheet1"]
 
-            rows, cols = df.shape
+            rows, _ = df.shape
             summary_row = rows + 1
 
             index_format = workbook.add_format(
@@ -79,15 +92,7 @@ def df_to_excel(
             )
             worksheet.write(summary_row, 0, "Summary", index_format)
             for spec in summary_specs:
-                aggregate = spec.get("aggregate")
-                label = spec.get("label")
-                column_index = df.columns.get_loc(label) + 1
-                column_letter = column_number_to_letter(column_index)
-                function_num = get_function_num(aggregate, True)
-                if not function_num:
-                    continue
-                formula = f"=SUBTOTAL({function_num},{column_letter}2:{column_letter}{rows + 1})"
-                worksheet.write_formula(rows + 1, column_index, formula)
+                write_summary_formula(worksheet, spec, df, summary_row)
     return output.getvalue()
 
 
