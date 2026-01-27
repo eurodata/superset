@@ -20,31 +20,36 @@ from typing import Any
 import pandas as pd
 from superset.utils.core import GenericDataType
 
+
 def column_number_to_letter(column_number: int) -> str:
     start_index = 0
-    letter = ''
+    letter = ""
     while column_number > 25 + start_index:
-        letter += chr(65 + int((column_number-start_index)/26) - 1)
-        column_number = column_number - (int((column_number-start_index)/26))*26
+        letter += chr(65 + int((column_number - start_index) / 26) - 1)
+        column_number = column_number - (int((column_number - start_index) / 26)) * 26
     letter += chr(65 - start_index + (int(column_number)))
     return letter
 
-def get_function_num(aggregate: str, ignore_hidden_rows = True) -> int:
+
+def get_function_num(aggregate: str, ignore_hidden_rows=True) -> int:
     function_num = None
     # COUNT_DISTINCT not possible for subtotal
     if aggregate == "SUM":
         function_num = 9 + (0, 100)[ignore_hidden_rows]
-    elif aggregate ==  "AVG":
+    elif aggregate == "AVG":
         function_num = 1 + (0, 100)[ignore_hidden_rows]
-    elif aggregate ==  "COUNT":
+    elif aggregate == "COUNT":
         function_num = 2 + (0, 100)[ignore_hidden_rows]
-    elif aggregate ==  "MAX":
+    elif aggregate == "MAX":
         function_num = 4 + (0, 100)[ignore_hidden_rows]
-    elif aggregate ==  "MIN":
+    elif aggregate == "MIN":
         function_num = 5 + (0, 100)[ignore_hidden_rows]
     return function_num
 
-def df_to_excel(df: pd.DataFrame, summary_specs: list[dict[str, str]] | None = None, **kwargs: Any) -> Any:
+
+def df_to_excel(
+    df: pd.DataFrame, summary_specs: list[dict[str, str]] | None = None, **kwargs: Any
+) -> Any:
     output = io.BytesIO()
 
     # pylint: disable=abstract-class-instantiated
@@ -52,21 +57,23 @@ def df_to_excel(df: pd.DataFrame, summary_specs: list[dict[str, str]] | None = N
         df.to_excel(writer, **kwargs)
 
         if summary_specs:
-            workbook  = writer.book
-            worksheet = writer.sheets['Sheet1']
+            workbook = writer.book
+            worksheet = writer.sheets["Sheet1"]
 
             rows, cols = df.shape
             summary_row = rows + 1
 
-            index_format = workbook.add_format({
-                "bold": True,
-                "align": "center",
-                "valign": "top",
-                "top": 1,
-                "bottom": 1,
-                "left": 1,
-                "right": 1,
-            })
+            index_format = workbook.add_format(
+                {
+                    "bold": True,
+                    "align": "center",
+                    "valign": "top",
+                    "top": 1,
+                    "bottom": 1,
+                    "left": 1,
+                    "right": 1,
+                }
+            )
             worksheet.write(summary_row, 0, "Summary", index_format)
             for spec in summary_specs:
                 aggregate = spec.get("aggregate")

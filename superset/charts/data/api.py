@@ -379,7 +379,6 @@ class ChartDataRestApi(ChartRestApi):
 
                 return XlsxResponse(data, headers=generate_download_headers("xlsx"))
 
-
             # Return only one file for tables having summary row (two query request)
             if form_data.get("show_totals") and len(result["queries"]) == 2:
                 # For CSV: Append summary query result at correct position
@@ -410,11 +409,13 @@ class ChartDataRestApi(ChartRestApi):
                     combined_data = out.getvalue()
 
                     return CsvResponse(
-                        combined_data,
-                        headers=generate_download_headers("csv")
+                        combined_data, headers=generate_download_headers("csv")
                     )
                 # For Excel: Return only first file. It was changed to append formulas.
-                return XlsxResponse(result["queries"][0]["data"], headers=generate_download_headers("xlsx"))
+                return XlsxResponse(
+                    result["queries"][0]["data"],
+                    headers=generate_download_headers("xlsx"),
+                )
 
             # return multi-query results bundled as a zip file
             def _process_data(query_data: Any) -> Any:

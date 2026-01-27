@@ -100,17 +100,19 @@ AGGREGATED_JOIN_GRAINS = {
 # Right suffix used for joining offset results
 R_SUFFIX = "__right_suffix"
 
+
 # extract information for summary row
 def extract_summary_specs(form_data: dict[str, Any]) -> list[dict[str, str]]:
-        summary_specs: list[dict[str, str]] = []
-        if form_data.get("show_totals"):
-            for metric in form_data.get("metrics", []):
-                aggregate = metric.get("aggregate", "unknown")
-                label = metric.get("label", "unknown label")
-                if not aggregate or not label:
-                    continue
-                summary_specs.append({"label": label, "aggregate": aggregate})
-        return summary_specs
+    summary_specs: list[dict[str, str]] = []
+    if form_data.get("show_totals"):
+        for metric in form_data.get("metrics", []):
+            aggregate = metric.get("aggregate", "unknown")
+            label = metric.get("label", "unknown label")
+            if not aggregate or not label:
+                continue
+            summary_specs.append({"label": label, "aggregate": aggregate})
+    return summary_specs
+
 
 class CachedTimeOffset(TypedDict):
     df: pd.DataFrame
