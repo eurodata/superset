@@ -51,35 +51,33 @@ def df_to_excel(df: pd.DataFrame, summary_specs: list[dict[str, str]] | None = N
     with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
         df.to_excel(writer, **kwargs)
 
-        if not summary_specs:
-            return output.getvalue()
+        if summary_specs:
+            workbook  = writer.book
+            worksheet = writer.sheets['Sheet1']
 
-        workbook  = writer.book
-        worksheet = writer.sheets['Sheet1']
+            rows, cols = df.shape
+            summary_row = rows + 1
 
-        rows, cols = df.shape
-        summary_row = rows + 1
-
-        index_format = workbook.add_format({
-            "bold": True,
-            "align": "center",
-            "valign": "top",
-            "top": 1,
-            "bottom": 1,
-            "left": 1,
-            "right": 1,
-        })
-        worksheet.write(summary_row, 0, "Summary", index_format)
-        for spec in summary_specs:
-            aggregate = spec.get("aggregate")
-            label = spec.get("label")
-            column_index = df.columns.get_loc(label) + 1
-            column_letter = column_number_to_letter(column_index)
-            function_num = get_function_num(aggregate, True)
-            if not function_num:
-                continue
-            formula = f"=SUBTOTAL({function_num},{column_letter}2:{column_letter}{rows + 1})"
-            worksheet.write_formula(rows + 1, column_index, formula)
+            index_format = workbook.add_format({
+                "bold": True,
+                "align": "center",
+                "valign": "top",
+                "top": 1,
+                "bottom": 1,
+                "left": 1,
+                "right": 1,
+            })
+            worksheet.write(summary_row, 0, "Summary", index_format)
+            for spec in summary_specs:
+                aggregate = spec.get("aggregate")
+                label = spec.get("label")
+                column_index = df.columns.get_loc(label) + 1
+                column_letter = column_number_to_letter(column_index)
+                function_num = get_function_num(aggregate, True)
+                if not function_num:
+                    continue
+                formula = f"=SUBTOTAL({function_num},{column_letter}2:{column_letter}{rows + 1})"
+                worksheet.write_formula(rows + 1, column_index, formula)
     return output.getvalue()
 
 
