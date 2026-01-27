@@ -53,8 +53,7 @@ def write_summary_formula(worksheet, spec, df, summary_row):
     label = spec.get("label")
     column_index = df.columns.get_loc(label) + 1
     column_letter = column_number_to_letter(column_index)
-    function_num = get_function_num(aggregate, True)
-    if function_num:
+    if function_num := get_function_num(aggregate, True):
         formula = (
             f"=SUBTOTAL({function_num},{column_letter}2:{column_letter}{summary_row})"
         )
