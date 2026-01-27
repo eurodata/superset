@@ -32,17 +32,16 @@ def column_number_to_letter(column_number: int) -> str:
 def get_function_num(aggregate: str, ignore_hidden_rows = True) -> int:
     function_num = None
     # COUNT_DISTINCT not possible for subtotal
-    match aggregate:
-        case "SUM":
-            function_num = 9 + (0, 100)[ignore_hidden_rows]
-        case "AVG":
-            function_num = 1 + (0, 100)[ignore_hidden_rows]
-        case "COUNT":
-            function_num = 2 + (0, 100)[ignore_hidden_rows]
-        case "MAX":
-            function_num = 4 + (0, 100)[ignore_hidden_rows]
-        case "MIN":
-            function_num = 5 + (0, 100)[ignore_hidden_rows]
+    if aggregate == "SUM":
+        function_num = 9 + (0, 100)[ignore_hidden_rows]
+    elif aggregate ==  "AVG":
+        function_num = 1 + (0, 100)[ignore_hidden_rows]
+    elif aggregate ==  "COUNT":
+        function_num = 2 + (0, 100)[ignore_hidden_rows]
+    elif aggregate ==  "MAX":
+        function_num = 4 + (0, 100)[ignore_hidden_rows]
+    elif aggregate ==  "MIN":
+        function_num = 5 + (0, 100)[ignore_hidden_rows]
     return function_num
 
 def df_to_excel(df: pd.DataFrame, summary_specs: list[dict[str, str]] | None = None, **kwargs: Any) -> Any:
