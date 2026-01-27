@@ -17,10 +17,10 @@
 from __future__ import annotations
 
 import contextlib
-import logging
-from typing import Any, TYPE_CHECKING
 import csv
 import io
+import logging
+from typing import Any, TYPE_CHECKING
 
 from flask import current_app, g, make_response, request, Response
 from flask_appbuilder.api import expose, protect
@@ -61,6 +61,7 @@ if TYPE_CHECKING:
     from superset.common.query_context import QueryContext
 
 logger = logging.getLogger(__name__)
+
 
 class ChartDataRestApi(ChartRestApi):
     include_route_methods = {"get_data", "data", "data_from_cache"}
@@ -386,7 +387,9 @@ class ChartDataRestApi(ChartRestApi):
                     main_header = next(main_reader)
                     combined_rows = list(main_reader)
 
-                    summary_reader = csv.DictReader(io.StringIO(result["queries"][1]["data"]))
+                    summary_reader = csv.DictReader(
+                        io.StringIO(result["queries"][1]["data"])
+                    )
 
                     for row in summary_reader:
                         new_row = []
