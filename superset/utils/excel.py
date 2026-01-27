@@ -51,7 +51,7 @@ def get_function_num(
 
 
 def write_summary_formula(
-    worksheet: Any, spec: dict[str, str], df: pd.Dataframe, summary_row: int
+    worksheet: Any, spec: dict[str, str], df: pd.DataFrame, summary_row: int
 ) -> None:
     aggregate = spec.get("aggregate")
     label = spec.get("label")
