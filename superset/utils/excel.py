@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 import io
-from typing import Any
+from typing import Any, Optional
 
 import pandas as pd
 
@@ -49,7 +49,9 @@ def get_function_num(aggregate: str, ignore_hidden_rows=True) -> int:
 
 
 def df_to_excel(
-    df: pd.DataFrame, summary_specs: list[dict[str, str]] | None = None, **kwargs: Any
+    df: pd.DataFrame,
+    summary_specs: Optional[list[dict[str, str]]] = None,
+    **kwargs: Any,
 ) -> Any:
     output = io.BytesIO()
 
