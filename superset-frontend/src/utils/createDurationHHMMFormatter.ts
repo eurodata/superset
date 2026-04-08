@@ -30,8 +30,8 @@ export default function createDurationHHMMFormatter(
     description: 'Duration as HH:MM from milliseconds',
     formatFunc: value => {
       const milliseconds = value * multiplier;
-      const totalSeconds = Math.floor(milliseconds / 1000);
-      const totalMinutes = Math.floor(totalSeconds / 60);
+      const totalSeconds = milliseconds / 1000;
+      const totalMinutes = Math.round(totalSeconds / 60);
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
 
