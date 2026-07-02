@@ -24,10 +24,12 @@ import re
 from collections.abc import Iterator
 from typing import Any, cast, TYPE_CHECKING
 
+import sqlglot
 import sqlparse
 from flask_babel import gettext as __
 from jinja2 import nodes, Template
 from sqlalchemy import and_
+from sqlglot import expressions as exp
 from sqlparse import keywords
 from sqlparse.lexer import Lexer
 from sqlparse.sql import (
@@ -177,11 +179,39 @@ def check_sql_functions_exist(
     """
     Check if the SQL statement contains any of the specified functions.
 
+    Parsing is done with sqlglot rather than sqlparse. sqlparse only recognises a
+    function when its name is *immediately* followed by "(", so a comment or extra
+    quoting between the name and the parenthesis (e.g. ``query_to_xml/**/(...)`` or
+    ``"query_to_xml"(...)``) hides the function from the denylist. This was the
+    DISALLOWED_SQL_FUNCTIONS bypass reported as CVE-2025-55674. sqlglot builds a
+    real AST and normalises the name, so those tricks no longer evade the check.
+
     :param sql: The SQL statement
-    :param function_list: The list of functions to search for
+    :param function_list: The set of (lower-case) function names to search for
     :param engine: The engine to use for parsing the SQL statement
     """
-    return ParsedQuery(sql, engine=engine).check_functions_exist(function_list)
+    if not function_list:
+        return False
+
+    dialect = SQLGLOT_DIALECTS.get(engine)
+    try:
+        statements = sqlglot.parse(sql, dialect=dialect)
+    except Exception:  # pylint: disable=broad-except
+        # sqlglot could not parse the statement (ParseError, tokenizer error,
+        # recursion limit, ...). Fall back to a conservative sqlparse scan on a
+        # comment-stripped copy so we never fail open and don't reject exotic but
+        # legitimate SQL that sqlglot doesn't understand.
+        stripped = sqlparse.format(sql, strip_comments=True)
+        return ParsedQuery(stripped, engine=engine).check_functions_exist(function_list)
+
+    for statement in statements:
+        if statement is None:
+            continue
+        for node in statement.find_all(exp.Func):
+            name = node.name if isinstance(node, exp.Anonymous) else node.sql_name()
+            if name and name.lower() in function_list:
+                return True
+    return False
 
 
 def strip_comments_from_sql(statement: str, engine: str = "base") -> str:
