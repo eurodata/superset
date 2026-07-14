@@ -26,7 +26,8 @@ from flask import flash, g, has_request_context, redirect, request
 from flask_appbuilder.security.sqla import models as ab_models
 from flask_appbuilder.security.sqla.models import User
 from flask_babel import _
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy import text
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from werkzeug.wrappers.response import Response
 
 from superset import app, dataframe, db, result_set, viz
@@ -47,7 +48,7 @@ from superset.models.slice import Slice
 from superset.models.sql_lab import Query
 from superset.superset_typing import FormData
 from superset.utils import json
-from superset.utils.core import DatasourceType
+from superset.utils.core import DatasourceType, get_user_id
 from superset.utils.decorators import stats_timing
 from superset.viz import BaseViz
 
@@ -68,6 +69,36 @@ def sanitize_datasource_data(datasource_data: dict[str, Any]) -> dict[str, Any]:
     return datasource_data
 
 
+def get_num_tax_offices() -> int:
+    database = db.session.query(Database).first()
+    with database.get_sqla_engine() as engine:
+        with engine.connect() as conn:
+            user_id = get_user_id()
+            try:
+                query = text("""SELECT COUNT(scope_id)
+                FROM bi.user_permission
+                WHERE superset_user_id = :user_id
+                    AND scope_type = :scope_type
+                    AND instance_id = :instance_id""")
+
+                result = conn.execute(
+                    query,
+                    {
+                        "user_id": user_id,
+                        "scope_type": "tax_advisor_office",
+                        "instance_id": "ist_erloese",
+                    },
+                )
+                num_tax_offices = result.scalar()
+            except SQLAlchemyError:
+                logger.error(
+                    "Number of permitted tax offices could not be fetched",
+                    exc_info=True,
+                )
+                num_tax_offices = 0
+    return num_tax_offices
+
+
 def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, Any]:
     if user.is_anonymous:
         payload = {}
@@ -81,6 +112,31 @@ def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, An
             "isAnonymous": user.is_anonymous,
         }
     else:
+        num_tax_offices = get_num_tax_offices()
+        hidden_elements: list[str] = []
+        if num_tax_offices < 2:
+            # uuid of "IST Erlöse" dashboard
+            ist_erloese_uuid = "1e741ee4-6ce1-4533-8877-c122d2c7301b"
+            dashboard = (
+                db.session.query(Dashboard)
+                .filter_by(uuid=ist_erloese_uuid)
+                .one_or_none()
+            )
+            if dashboard:
+                position_data = dashboard.position
+                # uuid of "IST Erlöse Kanzleivergleich" chart
+                kanzleivergleich_uuid = "4e70bad9-d29e-45cc-bd17-2ff88a1d06cd"
+                matches = list(
+                    filter(
+                        lambda kv: isinstance(kv[1], dict)
+                        and kv[1].get("type") == "CHART"
+                        and kv[1].get("meta", {}).get("uuid") == kanzleivergleich_uuid,
+                        position_data.items(),
+                    )
+                )
+                if matches:
+                    chart_key = matches[0][0]
+                    hidden_elements.append(chart_key)
         payload = {
             "username": user.username,
             "firstName": user.first_name,
@@ -90,6 +146,7 @@ def bootstrap_user_data(user: User, include_perms: bool = False) -> dict[str, An
             "isAnonymous": user.is_anonymous,
             "createdOn": user.created_on.isoformat(),
             "email": user.email,
+            "hidden_elements": hidden_elements,
         }
 
     if include_perms:
