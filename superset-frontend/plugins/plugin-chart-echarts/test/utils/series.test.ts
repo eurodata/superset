@@ -841,7 +841,9 @@ describe('formatSeriesName', () => {
   });
 
   test('should use numberFormatter for numeric values when formatter is provided', () => {
-    expect(formatSeriesName(12345678.9, { numberFormatter })).toEqual('12.3M');
+    expect(formatSeriesName(12345678.9, { numberFormatter })).toEqual(
+      '12.3\u00A0Mio',
+    );
   });
 
   test('should use default formatting for date values without formatter', () => {

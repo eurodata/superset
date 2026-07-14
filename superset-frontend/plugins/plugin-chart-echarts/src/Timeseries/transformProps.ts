@@ -41,6 +41,7 @@ import {
   TimeseriesChartDataResponseResult,
   TimeseriesDataRecord,
   NumberFormats,
+  PrefixSuffixFormatter,
 } from '@superset-ui/core';
 import { GenericDataType } from '@apache-superset/core/common';
 import {
@@ -83,6 +84,7 @@ import {
   getHorizontalLegendAvailableWidth,
   getLegendProps,
   getMinAndMaxFromBounds,
+  getTranslatedTimeCompare,
 } from '../utils/series';
 import { resolveLegendLayout } from '../utils/legendLayout';
 import {
@@ -261,6 +263,7 @@ export default function transformProps(
     xAxisLabelInterval,
     xAxisSort,
     xAxisSortAsc,
+    xAxisLabelLength,
     xAxisTimeFormat,
     xAxisNumberFormat,
     xAxisTitle,
@@ -268,6 +271,8 @@ export default function transformProps(
     yAxisBounds,
     yAxisFormat,
     currencyFormat,
+    valueSuffix,
+    valuePrefix,
     yAxisTitle,
     yAxisTitleMargin,
     yAxisTitlePosition,
@@ -289,6 +294,27 @@ export default function transformProps(
     }
     return { ...acc, [entry[0]]: entry[1] };
   }, {});
+
+  const timeCompareRegex = /^(.*)__([0-9]+ (?:day|week|year)s? ago)$/;
+  const timeCompareRegexWithDimensions =
+    /^([0-9]+ (?:day|week|year)s? ago),(.*)$/;
+
+  Object.keys(labelMap).forEach(key => {
+    const match = key.match(timeCompareRegex);
+    if (match) {
+      const [, metric, timePart] = match;
+      const translatedTimePart = getTranslatedTimeCompare(timePart);
+      verboseMap[key] = `${metric} ${translatedTimePart}`;
+    } else {
+      const matchWithDimensions = key.match(timeCompareRegexWithDimensions);
+      if (matchWithDimensions) {
+        const [, timePart, dimensions] = matchWithDimensions;
+        const translatedTimePart = getTranslatedTimeCompare(timePart);
+        verboseMap[key] = `${translatedTimePart},${dimensions}`;
+      }
+    }
+  });
+
   const colorScale = CategoricalColorNamespace.getScale(colorScheme as string);
   const rebasedData = rebaseForecastDatum(data, verboseMap);
   let xAxisLabel = getXAxisLabel(chartProps.rawFormData) as string;
@@ -368,6 +394,7 @@ export default function transformProps(
         currency: resolvedCurrency,
       })
     : getNumberFormatter(yAxisFormat);
+
   const customFormatters = buildCustomFormatters(
     metrics,
     currencyFormats,
@@ -472,6 +499,12 @@ export default function transformProps(
       }
     }
 
+    const metricFormatter = getCustomFormatter(
+      customFormatters,
+      metrics,
+      labelMap?.[seriesName]?.[0],
+    );
+
     const transformedSeries = transformSeries(
       entry,
       colorScale,
@@ -489,11 +522,17 @@ export default function transformProps(
         stack,
         formatter: forcePercentFormatter
           ? percentFormatter
-          : (getCustomFormatter(
-              customFormatters,
-              metrics,
-              labelMap?.[seriesName]?.[0],
-            ) ?? defaultFormatter),
+          : metricFormatter
+            ? new PrefixSuffixFormatter({
+                formatter: metricFormatter,
+                prefix: valuePrefix,
+                suffix: valueSuffix,
+              })
+            : new PrefixSuffixFormatter({
+                formatter: defaultFormatter,
+                prefix: valuePrefix,
+                suffix: valueSuffix,
+              }),
         showValue,
         onlyTotal,
         totalStackedValues: sortedTotalValues,
@@ -719,12 +758,20 @@ export default function transformProps(
     xAxisDataType === GenericDataType.Temporal
       ? getTooltipTimeFormatter(tooltipTimeFormat)
       : String;
+
+  const truncate = (value: string, maxLength: number | string) => {
+    if (typeof maxLength !== 'number') {
+      return value;
+    }
+    return value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
+  };
+
   const xAxisFormatter =
     xAxisDataType === GenericDataType.Temporal
       ? getXAxisFormatter(xAxisTimeFormat, timeGrainSqla)
       : xAxisDataType === GenericDataType.Numeric
         ? getNumberFormatter(xAxisNumberFormat)
-        : String;
+        : (value: any) => truncate(String(value), xAxisLabelLength);
 
   const {
     setDataMask = () => {},
@@ -958,13 +1005,19 @@ export default function transformProps(
       showMinLabel: !isMicroChart,
       showMaxLabel: !isMicroChart,
       hideOverlap: true,
-      formatter: getYAxisFormatter(
-        metrics,
-        forcePercentFormatter,
-        customFormatters,
-        defaultFormatter,
-        yAxisFormat,
-      ),
+      formatter: new PrefixSuffixFormatter({
+        formatter: getYAxisFormatter(
+          metrics,
+          forcePercentFormatter,
+          customFormatters,
+          yAxisFormat === 'DURATION_HHMM_H'
+            ? getNumberFormatter('SMART_NUMBER')
+            : defaultFormatter,
+          yAxisFormat,
+        ),
+        prefix: valuePrefix,
+        suffix: valueSuffix,
+      }),
     },
     axisTick: { show: !isSmallChart },
     scale: truncateYAxis,
@@ -1048,9 +1101,14 @@ export default function transformProps(
             value.forecastTrend || value.forecastLower || value.forecastUpper,
         );
 
-        const formatter = forcePercentFormatter
+        let formatter = forcePercentFormatter
           ? percentFormatter
           : (getCustomFormatter(customFormatters, metrics) ?? defaultFormatter);
+        formatter = new PrefixSuffixFormatter({
+          formatter,
+          prefix: valuePrefix,
+          suffix: valueSuffix,
+        });
 
         const rows: string[][] = [];
         const total = Object.values(filteredForecastValues).reduce(

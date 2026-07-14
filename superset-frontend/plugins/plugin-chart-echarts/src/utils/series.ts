@@ -30,6 +30,7 @@ import {
   NumberFormatter,
   TimeFormatter,
   ValueFormatter,
+  t,
 } from '@superset-ui/core';
 import { SupersetTheme } from '@apache-superset/core/theme';
 import { GenericDataType } from '@apache-superset/core/common';
@@ -1034,12 +1035,14 @@ export function getTimeCompareStackId(
   // Each timeCompare is its own stack so it doesn't stack on top of original ones
   return (
     timeCompare.find(value => {
+      const translatedTimeCompare = getTranslatedTimeCompare(value);
       if (typeof name === 'string') {
         // offset is represented as <offset>, group by list
         return (
           name.includes(`${value},`) ||
           // offset is represented as <metric>__<offset>
-          name.includes(`__${value}`)
+          name.includes(`__${value}`) ||
+          name.includes(translatedTimeCompare)
         );
       }
       return name?.toString().includes(value);
@@ -1081,4 +1084,23 @@ export function groupData(data: DataRecord[], by?: string | null) {
     seriesMap.set(undefined, data);
   }
   return seriesMap;
+}
+
+export function getTranslatedTimeCompare(timeCompare: string) {
+  let translatedTimeCompare;
+  switch (timeCompare) {
+    case '1 day ago':
+      translatedTimeCompare = 'Vortag';
+      break;
+    case '1 week ago':
+      translatedTimeCompare = 'Vorwoche';
+      break;
+    case '1 year ago':
+      translatedTimeCompare = 'Vorjahr';
+      break;
+    default:
+      translatedTimeCompare = t(timeCompare);
+      break;
+  }
+  return translatedTimeCompare;
 }

@@ -30,6 +30,7 @@ export const defaultYAxis = {
 export const defaultXAxis = {
   xAxisLabelRotation: 0,
   xAxisLabelInterval: 'auto',
+  xAxisLabelLength: 10,
 };
 
 export const defaultLegendPadding = {
