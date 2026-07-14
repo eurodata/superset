@@ -33,7 +33,7 @@ export default eyesPlugin(
     viewportHeight: 1024,
     projectId: 'ud5x2f',
     retries: {
-      runMode: 2,
+      runMode: 1,
       openMode: 0,
     },
     e2e: {
