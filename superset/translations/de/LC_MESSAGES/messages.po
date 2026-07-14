@@ -9922,9 +9922,9 @@ msgstr ""
 msgid "Show"
 msgstr "Anzeigen"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Show %s entries"
-msgstr "Metrik anzeigen"
+msgstr "%s Einträge anzeigen"
 
 msgid "Show Bubbles"
 msgstr "Blasen anzeigen"
@@ -10097,7 +10097,7 @@ msgid ""
 "Show total aggregations of selected metrics. Note that row limit does not"
 " apply to the result."
 msgstr ""
-"Zeigen Sie die Gesamtaggregationen ausgewählter Metriken an. Beachten "
+"Zeigt die Gesamtaggregationen ausgewählter Metriken an. Beachten "
 "Sie, dass das Zeilenlimit nicht für das Ergebnis gilt."
 
 msgid ""
