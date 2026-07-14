@@ -17,6 +17,8 @@
 from __future__ import annotations
 
 import contextlib
+import csv
+import io
 import logging
 from typing import Any, TYPE_CHECKING
 
@@ -375,6 +377,47 @@ class ChartDataRestApi(ChartRestApi):
                     return CsvResponse(data, headers=generate_download_headers("csv"))
 
                 return XlsxResponse(data, headers=generate_download_headers("xlsx"))
+
+            form_data = form_data or {}
+
+            # Return only one file for tables having summary row (two query request)
+            if form_data.get("show_totals") and len(result["queries"]) == 2:
+                # For CSV: Append summary query result at correct position
+                if is_csv_format:
+
+                    def _merge_csv(main_csv: str, summary_csv: str) -> str:
+                        main_reader = csv.reader(io.StringIO(main_csv))
+
+                        main_header = next(main_reader)
+                        combined_rows = list(main_reader)
+
+                        summary_reader = csv.DictReader(io.StringIO(summary_csv))
+
+                        for row in summary_reader:
+                            new_row = []
+                            for col in main_header:
+                                new_row.append(row.get(col, ""))
+                            combined_rows.append(new_row)
+
+                        out = io.StringIO()
+                        writer = csv.writer(out)
+
+                        writer.writerow(main_header)
+                        writer.writerows(combined_rows)
+
+                        return out.getvalue()
+
+                    return CsvResponse(
+                        _merge_csv(
+                            result["queries"][0]["data"], result["queries"][1]["data"]
+                        ),
+                        headers=generate_download_headers("csv"),
+                    )
+                # For Excel: Return only first file. It was changed to append formulas.
+                return XlsxResponse(
+                    result["queries"][0]["data"],
+                    headers=generate_download_headers("xlsx"),
+                )
 
             # return multi-query results bundled as a zip file
             def _process_data(query_data: Any) -> Any:
