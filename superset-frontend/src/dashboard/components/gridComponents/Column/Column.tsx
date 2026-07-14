@@ -64,6 +64,8 @@ interface ColumnProps {
   // optional
   onChangeTab?: (params: { pathToTabIndex: string[] }) => void;
   isComponentVisible?: boolean;
+
+  resizeToFullWidth?: boolean;
 }
 
 interface DragChildProps {
@@ -158,6 +160,7 @@ const Column = (props: ColumnProps) => {
     id,
     parentId,
     updateComponents,
+    resizeToFullWidth,
   } = props;
 
   const [isFocused, setIsFocused] = useState(false);
@@ -205,7 +208,7 @@ const Column = (props: ColumnProps) => {
         adjustableWidth
         adjustableHeight={false}
         widthStep={columnWidth}
-        widthMultiple={columnComponent.meta.width ?? 0}
+        widthMultiple={resizeToFullWidth ? 12 : columnComponent.meta.width ?? 0}
         heightMultiple={0}
         minWidthMultiple={minColumnWidth}
         maxWidthMultiple={
@@ -319,6 +322,7 @@ const Column = (props: ColumnProps) => {
                     }
                     isComponentVisible={isComponentVisible}
                     onChangeTab={onChangeTab}
+                    resizeToFullWidth={resizeToFullWidth}
                   />
                   {editMode && (
                     <Droppable

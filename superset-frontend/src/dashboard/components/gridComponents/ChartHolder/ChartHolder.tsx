@@ -69,6 +69,8 @@ interface ChartHolderProps {
   handleComponentDrop: (...args: unknown[]) => unknown;
   setFullSizeChartId: (chartId: number | null) => void;
   isInView: boolean;
+
+  resizeToFullWidth?: boolean;
 }
 
 const ChartHolder = ({
@@ -93,6 +95,7 @@ const ChartHolder = ({
   handleComponentDrop,
   setFullSizeChartId,
   isInView,
+  resizeToFullWidth,
 }: ChartHolderProps) => {
   const theme = useTheme();
   const fullSizeStyle = css`
@@ -171,10 +174,15 @@ const ChartHolder = ({
     )?.meta?.width;
 
     let widthMultiple = component.meta.width || GRID_MIN_COLUMN_COUNT;
+
     if (parentComponent.type === COLUMN_TYPE) {
       widthMultiple = parentComponent.meta.width || GRID_MIN_COLUMN_COUNT;
     } else if (columnParentWidth && widthMultiple > columnParentWidth) {
       widthMultiple = columnParentWidth;
+    }
+
+    if (resizeToFullWidth) {
+      widthMultiple = 12;
     }
 
     return widthMultiple;

@@ -17,7 +17,8 @@
  * under the License.
  */
 import { SyntheticEvent } from 'react';
-import domToPdf from 'dom-to-pdf';
+// import domToPdf from 'dom-to-pdf';
+import domToPdfCustom from 'src/utils/downloadPdfCustom';
 import { kebabCase } from 'lodash';
 import { t } from '@apache-superset/core/translation';
 import { logging } from '@apache-superset/core/utils';
@@ -48,6 +49,9 @@ export default function downloadAsPdf(
   selector: string,
   description: string,
   isExactSelector = false,
+  pdfBackgroundColor = 'white',
+  isNotLastElement?: (el: HTMLElement) => boolean,
+  modifyClone?: (cloneRoot: HTMLElement) => void,
 ) {
   return (event: SyntheticEvent) => {
     const elementToPrint = isExactSelector
@@ -67,8 +71,11 @@ export default function downloadAsPdf(
       image: { type: 'jpeg', quality: 1 },
       html2canvas: { scale: 2 },
       excludeClassNames: ['header-controls'],
+      pdfBackgroundColor,
+      isNotLastElement,
+      modifyClone,
     };
-    return domToPdf(elementToPrint, options)
+    return domToPdfCustom(elementToPrint, options)
       .then(() => {
         // nothing to be done
       })

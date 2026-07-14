@@ -48,6 +48,7 @@ import { BACKGROUND_TRANSPARENT } from 'src/dashboard/util/constants';
 import { isEmbedded } from 'src/dashboard/util/isEmbedded';
 import { EMPTY_CONTAINER_Z_INDEX } from 'src/dashboard/constants';
 import { isCurrentUserBot } from 'src/utils/isBot';
+import getBootstrapData from 'src/utils/getBootstrapData';
 
 export type RowProps = {
   id: string;
@@ -268,6 +269,12 @@ const Row = memo((props: RowProps) => {
     ) ?? backgroundStyleOptions[0];
 
   const remainColumnCount = availableColumnCount - occupiedColumnCount;
+
+  const hiddenElements = getBootstrapData()?.user?.hidden_elements || [];
+      const visibleRowItems = rowItems.filter(
+        id => !hiddenElements.includes(id) || editMode,
+      );
+
   const renderChild = useCallback(
     ({ dragSourceRef }: { dragSourceRef: RefObject<HTMLDivElement> }) => (
       <WithPopoverMenu
@@ -343,8 +350,8 @@ const Row = memo((props: RowProps) => {
           {rowItems.length === 0 && (
             <div css={emptyRowContentStyles as any}>{t('Empty row')}</div>
           )}
-          {rowItems.length > 0 &&
-            rowItems.map((componentId, itemIndex) => (
+          {visibleRowItems.length > 0 &&
+            visibleRowItems.map((componentId, itemIndex) => (
               <Fragment key={componentId}>
                 <DashboardComponent
                   key={componentId}
@@ -360,6 +367,10 @@ const Row = memo((props: RowProps) => {
                   isComponentVisible={isComponentVisible}
                   onChangeTab={onChangeTab}
                   isInView={isInView}
+                  resizeToFullWidth={
+                    rowItems.length > visibleRowItems.length &&
+                    visibleRowItems.length === 1
+                  }
                 />
                 {editMode && (
                   <Droppable
