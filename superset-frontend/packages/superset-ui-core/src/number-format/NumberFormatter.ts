@@ -32,6 +32,8 @@ export interface NumberFormatterConfig {
   isInvalid?: boolean;
 }
 
+const NON_BREAKING_SPACE = '\u00A0';
+
 // Use type augmentation to indicate that
 // an instance of NumberFormatter is also a function
 interface NumberFormatter {
@@ -76,8 +78,14 @@ class NumberFormatter extends ExtensibleFunction {
     if (value === Number.NEGATIVE_INFINITY) {
       return '-∞';
     }
-
-    return this.formatFunc(value);
+    let formattedValue = this.formatFunc(value);
+    const absoluteNumber: number = Math.abs(value);
+    if (absoluteNumber >= 1000 && absoluteNumber < 1000000) {
+      formattedValue = formattedValue.replace('k', `${NON_BREAKING_SPACE}Tsd`);
+    } else if (absoluteNumber >= 1000000 && absoluteNumber < 1000000000) {
+      formattedValue = formattedValue.replace('M', `${NON_BREAKING_SPACE}Mio`);
+    }
+    return formattedValue;
   }
 
   preview(value = PREVIEW_VALUE) {

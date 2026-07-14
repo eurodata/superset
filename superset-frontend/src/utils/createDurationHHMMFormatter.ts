@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,20 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { NumberFormatter } from '../number-format';
-import { CurrencyFormatter } from '../currency-format';
-import { PrefixSuffixFormatter } from '../prefix-suffix-format';
 
-export * from '../query/types';
-export * from './AgGrid';
+import { NumberFormatter } from '@superset-ui/core';
 
-export type Maybe<T> = T | null;
+export default function createDurationHHMMFormatter(
+  config: {
+    multiplier?: number;
+  } = {},
+) {
+  const { multiplier = 1 } = config;
 
-export type Optional<T> = T | undefined;
+  return new NumberFormatter({
+    description: 'Duration as HH:MM from milliseconds',
+    formatFunc: value => {
+      const milliseconds = value * multiplier;
+      const totalSeconds = milliseconds / 1000;
+      const totalMinutes = Math.round(totalSeconds / 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
 
-export type ValueOf<T> = T[keyof T];
-
-export type ValueFormatter =
-  | NumberFormatter
-  | CurrencyFormatter
-  | PrefixSuffixFormatter;
+      const hh = String(hours).padStart(2, '0');
+      const mm = String(minutes).padStart(2, '0');
+      return `${hh}:${mm}`;
+    },
+    id: 'duration_format_hhmm',
+    label: `Duration formatter HHMM`,
+  });
+}

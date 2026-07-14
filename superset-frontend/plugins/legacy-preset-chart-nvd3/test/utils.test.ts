@@ -131,9 +131,15 @@ describe('nvd3/utils', () => {
       // @ts-expect-error -- getTimeOrNumberFormatter doesn't distinguish return types; accepts Date at runtime
       expect(getTimeOrNumberFormatter('smart_date')(time)).toBe('10:11');
     });
+<<<<<<< HEAD:superset-frontend/plugins/legacy-preset-chart-nvd3/test/utils.test.ts
     test('returns a number formatter otherwise', () => {
       expect(getTimeOrNumberFormatter('.3s')(3000000)).toBe('3.00M');
       expect(getTimeOrNumberFormatter(undefined)(3000100)).toBe('3M');
+=======
+    it('returns a number formatter otherwise', () => {
+      expect(getTimeOrNumberFormatter('.3s')(3000000)).toBe('3.00\u00A0Mio');
+      expect(getTimeOrNumberFormatter()(3000100)).toBe('3\u00A0Mio');
+>>>>>>> 54a6da8bd7 (feat(formatters): number-display, duration & prefix/suffix formatters (DDS-1962, EDORGANEXT-10393/12257/8881) [FRONTEND — foundation]):superset-frontend/plugins/legacy-preset-chart-nvd3/test/utils.test.js
     });
   });
 

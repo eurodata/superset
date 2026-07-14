@@ -22,6 +22,7 @@ import React from 'react';
 // eslint-disable-next-line no-restricted-imports
 import { configure as configureTestingLibrary } from '@testing-library/react';
 import { matchers } from '@emotion/jest';
+import { TextEncoder, TextDecoder } from 'util';
 
 configureTestingLibrary({
   testIdAttribute: 'data-test',
@@ -38,3 +39,5 @@ jest.mock('ace-builds/src-min-noconflict/mode-handlebars', () => ({}));
 jest.mock('ace-builds/src-min-noconflict/mode-css', () => ({}));
 jest.mock('ace-builds/src-noconflict/theme-github', () => ({}));
 jest.mock('ace-builds/src-noconflict/theme-monokai', () => ({}));
+(global as any).TextEncoder = TextEncoder;
+(global as any).TextDecoder = TextDecoder;

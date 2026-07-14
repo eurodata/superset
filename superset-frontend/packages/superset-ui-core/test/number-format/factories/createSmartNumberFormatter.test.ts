@@ -35,10 +35,10 @@ describe('createSmartNumberFormatter(options)', () => {
         expect(formatter(4560000000)).toBe('4.56B');
       });
       test('formats numbers that are >= 1,000 & <= 1,000,000,000 as SI format with precision 3', () => {
-        expect(formatter(1000)).toBe('1k');
-        expect(formatter(10001)).toBe('10k');
-        expect(formatter(10100)).toBe('10.1k');
-        expect(formatter(111000000)).toBe('111M');
+        expect(formatter(1000)).toBe('1\u00A0Tsd');
+        expect(formatter(10001)).toBe('10\u00A0Tsd');
+        expect(formatter(10100)).toBe('10.1\u00A0Tsd');
+        expect(formatter(111000000)).toBe('111\u00A0Mio');
       });
       test('formats number that are >= 1 & < 1,000 as integer or float with at most 2 decimal points', () => {
         expect(formatter(1)).toBe('1');
@@ -76,10 +76,10 @@ describe('createSmartNumberFormatter(options)', () => {
         expect(formatter(-4560000000)).toBe('-4.56B');
       });
       test('formats numbers that are >= 1,000 & <= 1,000,000,000 as SI format with precision 3', () => {
-        expect(formatter(-1000)).toBe('-1k');
-        expect(formatter(-10001)).toBe('-10k');
-        expect(formatter(-10100)).toBe('-10.1k');
-        expect(formatter(-111000000)).toBe('-111M');
+        expect(formatter(-1000)).toBe('-1\u00A0Tsd');
+        expect(formatter(-10001)).toBe('-10\u00A0Tsd');
+        expect(formatter(-10100)).toBe('-10.1\u00A0Tsd');
+        expect(formatter(-111000000)).toBe('-111\u00A0Mio');
       });
       test('formats number that are >= 1 & < 1,000 as integer or float with at most 2 decimal points', () => {
         expect(formatter(-1)).toBe('-1');
@@ -119,10 +119,10 @@ describe('createSmartNumberFormatter(options)', () => {
         expect(formatter(4560000000)).toBe('+4.56B');
       });
       test('formats numbers that are >= 1,000 & <= 1,000,000,000 as SI format with precision 3', () => {
-        expect(formatter(1000)).toBe('+1k');
-        expect(formatter(10001)).toBe('+10k');
-        expect(formatter(10100)).toBe('+10.1k');
-        expect(formatter(111000000)).toBe('+111M');
+        expect(formatter(1000)).toBe('+1\u00A0Tsd');
+        expect(formatter(10001)).toBe('+10\u00A0Tsd');
+        expect(formatter(10100)).toBe('+10.1\u00A0Tsd');
+        expect(formatter(111000000)).toBe('+111\u00A0Mio');
       });
       test('formats number that are >= 1 & < 1,000 as integer or float with at most 2 decimal points', () => {
         expect(formatter(1)).toBe('+1');
