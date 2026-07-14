@@ -28,6 +28,7 @@ import {
   getValueFormatter,
   tooltipHtml,
   DataRecord,
+  PrefixSuffixFormatter,
 } from '@superset-ui/core';
 import type { CallbackDataParams } from 'echarts/types/src/util/types';
 import type { EChartsCoreOption } from 'echarts/core';
@@ -161,6 +162,8 @@ export default function transformProps(
     metric = '',
     numberFormat,
     currencyFormat,
+    valuePrefix,
+    valueSuffix,
     dateFormat,
     outerRadius,
     showLabels,
@@ -181,17 +184,21 @@ export default function transformProps(
   const groupbyLabels = groupby.map(getColumnLabel);
   const minShowLabelAngle = (showLabelsThreshold || 0) * 3.6;
 
-  const numberFormatter = getValueFormatter(
-    metric,
-    currencyFormats,
-    columnFormats,
-    numberFormat,
-    currencyFormat,
-    undefined,
-    rawData,
-    currencyCodeColumn,
-    detectedCurrency,
-  );
+  const numberFormatter = new PrefixSuffixFormatter({
+    formatter: getValueFormatter(
+      metric,
+      currencyFormats,
+      columnFormats,
+      numberFormat,
+      currencyFormat,
+      undefined,
+      rawData,
+      currencyCodeColumn,
+      detectedCurrency,
+    ),
+    prefix: valuePrefix,
+    suffix: valueSuffix,
+  });
 
   let data = rawData;
   const otherRows: DataRecord[] = [];

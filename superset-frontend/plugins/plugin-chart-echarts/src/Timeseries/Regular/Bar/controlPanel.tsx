@@ -223,6 +223,8 @@ function createAxisControl(axis: 'x' | 'y'): ControlSetRow[] {
         },
       },
     ],
+    [
+      {
         name: 'xAxisLabelLength',
         config: {
           type: 'TextControl',
