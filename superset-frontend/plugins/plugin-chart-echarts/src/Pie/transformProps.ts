@@ -27,6 +27,7 @@ import {
   ValueFormatter,
   getValueFormatter,
   tooltipHtml,
+  PrefixSuffixFormatter,
 } from '@superset-ui/core';
 import type { CallbackDataParams } from 'echarts/types/src/util/types';
 import type { EChartsCoreOption } from 'echarts/core';
@@ -151,6 +152,8 @@ export default function transformProps(
     metric = '',
     numberFormat,
     currencyFormat,
+    valuePrefix,
+    valueSuffix,
     dateFormat,
     outerRadius,
     showLabels,
@@ -192,13 +195,17 @@ export default function transformProps(
 
   const { setDataMask = () => {}, onContextMenu } = hooks;
   const colorFn = CategoricalColorNamespace.getScale(colorScheme as string);
-  const numberFormatter = getValueFormatter(
-    metric,
-    currencyFormats,
-    columnFormats,
-    numberFormat,
-    currencyFormat,
-  );
+  const numberFormatter = new PrefixSuffixFormatter({
+    formatter: getValueFormatter(
+      metric,
+      currencyFormats,
+      columnFormats,
+      numberFormat,
+      currencyFormat,
+    ),
+    prefix: valuePrefix,
+    suffix: valueSuffix,
+  });
 
   let totalValue = 0;
 
