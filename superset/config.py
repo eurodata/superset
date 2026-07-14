@@ -413,7 +413,12 @@ class D3Format(TypedDict, total=False):
     currency: list[str]
 
 
-D3_FORMAT: D3Format = {}
+D3_FORMAT: D3Format = {
+    "decimal": ",",  # - decimal place string (e.g., ".").
+    "thousands": ".",  # - group separator string (e.g., ",").
+    "grouping": [3],  # - array of group sizes (e.g., [3]), cycled as needed.
+    "currency": ["", " €"],  # - currency prefix/suffix strings (e.g., ["$", ""])
+}
 
 
 # Override the default d3 locale for time format
@@ -651,6 +656,23 @@ COMMON_BOOTSTRAP_OVERRIDES_FUNC: Callable[  # noqa: E731
 
 # This is merely a default
 EXTRA_CATEGORICAL_COLOR_SCHEMES: list[dict[str, Any]] = []
+EXTRA_CATEGORICAL_COLOR_SCHEMES = [
+    {
+        "id": "eurodata_1",
+        "description": "",
+        "label": "Eurodata Standard",
+        "isDefault": True,
+        "colors": [
+            "#005c70",
+            "#8fc7d4",
+            "#E6BA00",
+            "#8fc7d4",
+            "#cc4f00",
+            "#005c70",
+            "#761053",
+        ],
+    }
+]
 
 # THEME_OVERRIDES is used for adding custom theme to superset
 # example code for "My theme" custom scheme
