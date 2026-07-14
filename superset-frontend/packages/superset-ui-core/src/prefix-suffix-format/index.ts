@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,22 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import 'jest-enzyme';
-import './shim';
-// eslint-disable-next-line no-restricted-syntax -- whole React import is required for mocking React module in tests.
-import React from 'react';
-import { configure as configureTestingLibrary } from '@testing-library/react';
-import { matchers } from '@emotion/jest';
-import { TextEncoder, TextDecoder } from 'util';
 
-configureTestingLibrary({
-  testIdAttribute: 'data-test',
-});
-
-document.body.innerHTML = '<div id="app" data-bootstrap=""></div>';
-expect.extend(matchers);
-
-// Allow JSX tests to have React import readily available
-global.React = React;
-(global as any).TextEncoder = TextEncoder;
-(global as any).TextDecoder = TextDecoder;
+export { default as PrefixSuffixFormatter } from './PrefixSuffixFormatter';
+export * from './PrefixSuffixFormatter';

@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,22 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import 'jest-enzyme';
-import './shim';
-// eslint-disable-next-line no-restricted-syntax -- whole React import is required for mocking React module in tests.
-import React from 'react';
-import { configure as configureTestingLibrary } from '@testing-library/react';
-import { matchers } from '@emotion/jest';
-import { TextEncoder, TextDecoder } from 'util';
 
-configureTestingLibrary({
-  testIdAttribute: 'data-test',
-});
+import { NumberFormatter } from '@superset-ui/core';
 
-document.body.innerHTML = '<div id="app" data-bootstrap=""></div>';
-expect.extend(matchers);
+export default function createDurationHHMMFormatter(
+  config: {
+    multiplier?: number;
+  } = {},
+) {
+  const { multiplier = 1 } = config;
 
-// Allow JSX tests to have React import readily available
-global.React = React;
-(global as any).TextEncoder = TextEncoder;
-(global as any).TextDecoder = TextDecoder;
+  return new NumberFormatter({
+    description: 'Duration as HH:MM from milliseconds',
+    formatFunc: value => {
+      const milliseconds = value * multiplier;
+      const totalSeconds = milliseconds / 1000;
+      const totalMinutes = Math.round(totalSeconds / 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      const hh = String(hours).padStart(2, '0');
+      const mm = String(minutes).padStart(2, '0');
+      return `${hh}:${mm}`;
+    },
+    id: 'duration_format_hhmm',
+    label: `Duration formatter HHMM`,
+  });
+}
