@@ -16857,9 +16857,8 @@ msgstr "Kantenbreite"
 msgid "entries"
 msgstr "Einträge"
 
-#, fuzzy
 msgid "entries per page"
-msgstr "Einträge"
+msgstr "Einträge pro Seite"
 
 msgid "error"
 msgstr "Fehler"
