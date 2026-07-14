@@ -88,6 +88,7 @@ export type EchartsTimeseriesFormData = QueryFormData & {
   zoomable: boolean;
   richTooltip: boolean;
   xAxisLabelRotation: number;
+  xAxisLabelLength: number;
   showValue: boolean;
   onlyTotal: boolean;
   showExtraControls: boolean;

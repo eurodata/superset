@@ -53,6 +53,7 @@ const {
   yAxisBounds,
   zoomable,
   orientation,
+  xAxisLabelLength,
 } = DEFAULT_FORM_DATA;
 
 function createAxisTitleControl(axis: 'x' | 'y'): ControlSetRow[] {
@@ -189,6 +190,25 @@ function createAxisControl(axis: 'x' | 'y'): ControlSetRow[] {
     ],
     [
       {
+        name: 'xAxisLabelLength',
+        config: {
+          type: 'TextControl',
+          label: t('X axis label length'),
+          renderTrigger: true,
+          isInt: true,
+          default: xAxisLabelLength,
+          description: t(
+            'Maximum length of X axis label before it is truncated. Leave empty to disable truncation.',
+          ),
+          visibility: ({ controls }: ControlPanelsContainerProps) =>
+            isXAxis ? isVertical(controls) : isHorizontal(controls),
+          disableStash: true,
+          resetOnHide: false,
+        },
+      },
+    ],
+    [
+      {
         name: 'y_axis_format',
         config: {
           ...sharedControls.y_axis_format,
@@ -201,6 +221,26 @@ function createAxisControl(axis: 'x' | 'y'): ControlSetRow[] {
       },
     ],
     ['currency_format'],
+    [
+      {
+        name: 'value_prefix',
+        config: {
+          ...sharedControls.value_prefix,
+          visibility: ({ controls }: ControlPanelsContainerProps) =>
+            isXAxis ? isHorizontal(controls) : isVertical(controls),
+        },
+      },
+    ],
+    [
+      {
+        name: 'value_suffix',
+        config: {
+          ...sharedControls.value_suffix,
+          visibility: ({ controls }: ControlPanelsContainerProps) =>
+            isXAxis ? isHorizontal(controls) : isVertical(controls),
+        },
+      },
+    ],
     [
       {
         name: 'logAxis',

@@ -40,6 +40,7 @@ import {
   t,
   TimeseriesChartDataResponseResult,
   NumberFormats,
+  PrefixSuffixFormatter,
 } from '@superset-ui/core';
 import {
   extractExtraMetrics,
@@ -70,6 +71,7 @@ import {
   getColtypesMapping,
   getLegendProps,
   getMinAndMaxFromBounds,
+  getTranslatedTimeCompare,
 } from '../utils/series';
 import {
   extractAnnotationLabels,
@@ -177,6 +179,7 @@ export default function transformProps(
     xAxisBounds,
     xAxisForceCategorical,
     xAxisLabelRotation,
+    xAxisLabelLength,
     xAxisSortSeries,
     xAxisSortSeriesAscending,
     xAxisTimeFormat,
@@ -185,11 +188,14 @@ export default function transformProps(
     yAxisBounds,
     yAxisFormat,
     currencyFormat,
+    valueSuffix,
+    valuePrefix,
     yAxisTitle,
     yAxisTitleMargin,
     yAxisTitlePosition,
     zoomable,
   }: EchartsTimeseriesFormData = { ...DEFAULT_FORM_DATA, ...formData };
+
   const refs: Refs = {};
   const groupBy = ensureIsArray(groupby);
   const labelMap: { [key: string]: string[] } = Object.entries(
@@ -204,6 +210,27 @@ export default function transformProps(
     }
     return { ...acc, [entry[0]]: entry[1] };
   }, {});
+
+  const timeCompareRegex = /^(.*)__([0-9]+ (?:day|week|year)s? ago)$/;
+  const timeCompareRegexWithDimensions =
+    /^([0-9]+ (?:day|week|year)s? ago),(.*)$/;
+
+  Object.keys(labelMap).forEach(key => {
+    const match = key.match(timeCompareRegex);
+    if (match) {
+      const [, metric, timePart] = match;
+      const translatedTimePart = getTranslatedTimeCompare(timePart);
+      verboseMap[key] = `${metric} ${translatedTimePart}`;
+    } else {
+      const matchWithDimensions = key.match(timeCompareRegexWithDimensions);
+      if (matchWithDimensions) {
+        const [, timePart, dimensions] = matchWithDimensions;
+        const translatedTimePart = getTranslatedTimeCompare(timePart);
+        verboseMap[key] = `${translatedTimePart},${dimensions}`;
+      }
+    }
+  });
+
   const colorScale = CategoricalColorNamespace.getScale(colorScheme as string);
   const rebasedData = rebaseForecastDatum(data, verboseMap);
   let xAxisLabel = getXAxisLabel(chartProps.rawFormData) as string;
@@ -268,6 +295,7 @@ export default function transformProps(
   const defaultFormatter = currencyFormat?.symbol
     ? new CurrencyFormatter({ d3Format: yAxisFormat, currency: currencyFormat })
     : getNumberFormatter(yAxisFormat);
+
   const customFormatters = buildCustomFormatters(
     metrics,
     currencyFormats,
@@ -300,6 +328,12 @@ export default function transformProps(
     const seriesName = inverted[entryName] || entryName;
     const colorScaleKey = getOriginalSeries(seriesName, array);
 
+    const metricFormatter = getCustomFormatter(
+      customFormatters,
+      metrics,
+      labelMap?.[seriesName]?.[0],
+    );
+
     const transformedSeries = transformSeries(
       entry,
       colorScale,
@@ -317,11 +351,17 @@ export default function transformProps(
         stack,
         formatter: forcePercentFormatter
           ? percentFormatter
-          : getCustomFormatter(
-              customFormatters,
-              metrics,
-              labelMap?.[seriesName]?.[0],
-            ) ?? defaultFormatter,
+          : metricFormatter
+            ? new PrefixSuffixFormatter({
+                formatter: metricFormatter,
+                prefix: valuePrefix,
+                suffix: valueSuffix,
+              })
+            : new PrefixSuffixFormatter({
+                formatter: defaultFormatter,
+                prefix: valuePrefix,
+                suffix: valueSuffix,
+              }),
         showValue,
         onlyTotal,
         totalStackedValues: sortedTotalValues,
@@ -442,10 +482,18 @@ export default function transformProps(
     xAxisDataType === GenericDataType.Temporal
       ? getTooltipTimeFormatter(tooltipTimeFormat)
       : String;
+
+  const truncate = (value: string, maxLength: number | string) => {
+    if (typeof maxLength !== 'number') {
+      return value;
+    }
+    return value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
+  };
+
   const xAxisFormatter =
     xAxisDataType === GenericDataType.Temporal
       ? getXAxisFormatter(xAxisTimeFormat)
-      : String;
+      : (value: any) => truncate(String(value), xAxisLabelLength);
 
   const {
     setDataMask = () => {},
@@ -512,13 +560,19 @@ export default function transformProps(
     minorTick: { show: minorTicks },
     minorSplitLine: { show: minorSplitLine },
     axisLabel: {
-      formatter: getYAxisFormatter(
-        metrics,
-        forcePercentFormatter,
-        customFormatters,
-        defaultFormatter,
-        yAxisFormat,
-      ),
+      formatter: new PrefixSuffixFormatter({
+        formatter: getYAxisFormatter(
+          metrics,
+          forcePercentFormatter,
+          customFormatters,
+          yAxisFormat === 'DURATION_HHMM_H'
+            ? getNumberFormatter('SMART_NUMBER')
+            : defaultFormatter,
+          yAxisFormat,
+        ),
+        prefix: valuePrefix,
+        suffix: valueSuffix,
+      }),
     },
     scale: truncateYAxis,
     name: yAxisTitle,
@@ -563,9 +617,14 @@ export default function transformProps(
             value.forecastTrend || value.forecastLower || value.forecastUpper,
         );
 
-        const formatter = forcePercentFormatter
+        let formatter = forcePercentFormatter
           ? percentFormatter
           : getCustomFormatter(customFormatters, metrics) ?? defaultFormatter;
+        formatter = new PrefixSuffixFormatter({
+          formatter,
+          prefix: valuePrefix,
+          suffix: valueSuffix,
+        });
 
         const rows: string[][] = [];
         const total = Object.values(forecastValues).reduce(
