@@ -16,11 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import { FC } from 'react';
+import { useTimeRangeText } from 'src/hooks/useTimeRangeText';
+import {
+  HorizontalBar,
+  HorizontalBarContent,
+} from './nativeFilters/FilterBar/Horizontal';
+import { TimeRangeDisplay } from './timeRangeStyles';
 
-declare module 'dom-to-image-more' {
-  export interface DomToImage {
-    toCanvas(node: Node, options?: any): Promise<HTMLCanvasElement>;
-  }
-  import domToImage = require('dom-to-image-more');
-  export = domToImage;
-}
+type Props = {
+  defaultTimeRange?: string;
+};
+
+const TimeRangeTopBar: FC<Props> = ({ defaultTimeRange }) => {
+  const timeRangeText = useTimeRangeText(defaultTimeRange);
+  return (
+    <HorizontalBar>
+      <HorizontalBarContent>
+        <TimeRangeDisplay>{timeRangeText}</TimeRangeDisplay>
+      </HorizontalBarContent>
+    </HorizontalBar>
+  );
+};
+
+export default TimeRangeTopBar;

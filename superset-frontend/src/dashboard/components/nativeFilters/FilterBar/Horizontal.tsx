@@ -30,6 +30,8 @@ import Icons from 'src/components/Icons';
 import Loading from 'src/components/Loading';
 import { DashboardLayout, RootState } from 'src/dashboard/types';
 import { useSelector } from 'react-redux';
+import { TimeRangeDisplay } from 'src/dashboard/components/timeRangeStyles';
+import { useTimeRangeText } from 'src/hooks/useTimeRangeText';
 import FilterControls from './FilterControls/FilterControls';
 import { useChartsVerboseMaps, getFilterBarTestId } from './utils';
 import { HorizontalBarProps } from './types';
@@ -37,7 +39,7 @@ import FilterBarSettings from './FilterBarSettings';
 import FilterConfigurationLink from './FilterConfigurationLink';
 import crossFiltersSelector from './CrossFilters/selectors';
 
-const HorizontalBar = styled.div`
+export const HorizontalBar = styled.div`
   ${({ theme }) => `
     padding: ${theme.gridUnit * 3}px ${theme.gridUnit * 2}px ${
       theme.gridUnit * 3
@@ -47,7 +49,7 @@ const HorizontalBar = styled.div`
   `}
 `;
 
-const HorizontalBarContent = styled.div`
+export const HorizontalBarContent = styled.div`
   ${({ theme }) => `
     display: flex;
     flex-direction: row;
@@ -129,6 +131,8 @@ const HorizontalFilterBar: FC<HorizontalBarProps> = ({
     : [];
   const hasFilters = filterValues.length > 0 || selectedCrossFilters.length > 0;
 
+  const timeRangeText = useTimeRangeText('Last year');
+
   return (
     <HorizontalBar {...getFilterBarTestId()}>
       <HorizontalBarContent>
@@ -159,6 +163,7 @@ const HorizontalFilterBar: FC<HorizontalBarProps> = ({
               />
             )}
             {actions}
+            <TimeRangeDisplay>{timeRangeText}</TimeRangeDisplay>
           </>
         )}
       </HorizontalBarContent>

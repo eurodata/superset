@@ -16,11 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import { styled } from '@superset-ui/core';
 
-declare module 'dom-to-image-more' {
-  export interface DomToImage {
-    toCanvas(node: Node, options?: any): Promise<HTMLCanvasElement>;
-  }
-  import domToImage = require('dom-to-image-more');
-  export = domToImage;
-}
+export const TimeRangeDisplay = styled.div`
+  ${({ theme }) => `
+    color: ${theme.colors.grayscale.light5};
+    margin-left: auto;
+    padding: 0.6rem;
+  `}
+`;

@@ -68,6 +68,7 @@ import { DashboardStatus } from 'src/features/dashboards/types';
 import { UserWithPermissionsAndRoles } from 'src/types/bootstrapTypes';
 import { findPermission } from 'src/utils/findPermission';
 import { ModifiedInfo } from 'src/components/AuditInfo';
+import { isUserAdmin } from 'src/dashboard/util/permissionUtils';
 
 const PAGE_SIZE = 25;
 const PASSWORDS_NEEDED_MESSAGE = t(
@@ -141,8 +142,8 @@ function DashboardList(props: DashboardListProps) {
   const { roles } = useSelector<any, UserWithPermissionsAndRoles>(
     state => state.user,
   );
+  const isAdmin = isUserAdmin(user);
   const canReadTag = findPermission('can_read', 'Tag', roles);
-
   const {
     state: {
       loading,
@@ -387,6 +388,7 @@ function DashboardList(props: DashboardListProps) {
         accessor: 'owners',
         disableSortBy: true,
         size: 'xl',
+        hidden: !isAdmin,
       },
       {
         Cell: ({
@@ -528,18 +530,22 @@ function DashboardList(props: DashboardListProps) {
         input: 'search',
         operator: FilterOperator.TitleOrSlug,
       },
-      {
-        Header: t('Status'),
-        key: 'published',
-        id: 'published',
-        input: 'select',
-        operator: FilterOperator.Equals,
-        unfilteredLabel: t('Any'),
-        selects: [
-          { label: t('Published'), value: true },
-          { label: t('Draft'), value: false },
-        ],
-      },
+      ...(isAdmin
+        ? [
+            {
+              Header: t('Status'),
+              key: 'published',
+              id: 'published',
+              input: 'select',
+              operator: FilterOperator.Equals,
+              unfilteredLabel: t('Any'),
+              selects: [
+                { label: t('Published'), value: true },
+                { label: t('Draft'), value: false },
+              ],
+            },
+          ]
+        : []),
       ...(isFeatureEnabled(FeatureFlag.TaggingSystem) && canReadTag
         ? [
             {
@@ -553,62 +559,74 @@ function DashboardList(props: DashboardListProps) {
             },
           ]
         : []),
-      {
-        Header: t('Owner'),
-        key: 'owner',
-        id: 'owners',
-        input: 'select',
-        operator: FilterOperator.RelationManyMany,
-        unfilteredLabel: t('All'),
-        fetchSelects: createFetchRelated(
-          'dashboard',
-          'owners',
-          createErrorHandler(errMsg =>
-            addDangerToast(
-              t(
-                'An error occurred while fetching dashboard owner values: %s',
-                errMsg,
+      ...(isAdmin
+        ? [
+            {
+              Header: t('Owner'),
+              key: 'owner',
+              id: 'owners',
+              input: 'select',
+              operator: FilterOperator.RelationManyMany,
+              unfilteredLabel: t('All'),
+              fetchSelects: createFetchRelated(
+                'dashboard',
+                'owners',
+                createErrorHandler(errMsg =>
+                  addDangerToast(
+                    t(
+                      'An error occurred while fetching dashboard owner values: %s',
+                      errMsg,
+                    ),
+                  ),
+                ),
+                props.user,
               ),
-            ),
-          ),
-          props.user,
-        ),
-        paginate: true,
-      },
+              paginate: true,
+            },
+          ]
+        : []),
       ...(user?.userId ? [favoritesFilter] : []),
-      {
-        Header: t('Certified'),
-        key: 'certified',
-        id: 'id',
-        urlDisplay: 'certified',
-        input: 'select',
-        operator: FilterOperator.DashboardIsCertified,
-        unfilteredLabel: t('Any'),
-        selects: [
-          { label: t('Yes'), value: true },
-          { label: t('No'), value: false },
-        ],
-      },
-      {
-        Header: t('Modified by'),
-        key: 'changed_by',
-        id: 'changed_by',
-        input: 'select',
-        operator: FilterOperator.RelationOneMany,
-        unfilteredLabel: t('All'),
-        fetchSelects: createFetchRelated(
-          'dashboard',
-          'changed_by',
-          createErrorHandler(errMsg =>
-            t(
-              'An error occurred while fetching dataset datasource values: %s',
-              errMsg,
-            ),
-          ),
-          user,
-        ),
-        paginate: true,
-      },
+      ...(isAdmin
+        ? [
+            {
+              Header: t('Certified'),
+              key: 'certified',
+              id: 'id',
+              urlDisplay: 'certified',
+              input: 'select',
+              operator: FilterOperator.DashboardIsCertified,
+              unfilteredLabel: t('Any'),
+              selects: [
+                { label: t('Yes'), value: true },
+                { label: t('No'), value: false },
+              ],
+            },
+          ]
+        : []),
+      ...(isAdmin
+        ? [
+            {
+              Header: t('Modified by'),
+              key: 'changed_by',
+              id: 'changed_by',
+              input: 'select',
+              operator: FilterOperator.RelationOneMany,
+              unfilteredLabel: t('All'),
+              fetchSelects: createFetchRelated(
+                'dashboard',
+                'changed_by',
+                createErrorHandler(errMsg =>
+                  t(
+                    'An error occurred while fetching dataset datasource values: %s',
+                    errMsg,
+                  ),
+                ),
+                user,
+              ),
+              paginate: true,
+            },
+          ]
+        : []),
     ] as Filters;
     return filters_list;
   }, [addDangerToast, favoritesFilter, props.user]);
