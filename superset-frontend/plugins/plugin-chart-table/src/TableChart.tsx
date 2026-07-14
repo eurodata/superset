@@ -196,9 +196,11 @@ function SelectPageSize({
   current,
   onChange,
 }: SelectPageSizeRendererProps) {
+  const translated = t('Show %s entries', 'NUMBER_PLACEHOLDER');
+  const parts = translated.split('NUMBER_PLACEHOLDER');
   return (
     <span className="dt-select-page-size form-inline">
-      {t('page_size.show')}{' '}
+      {parts[0]}
       <select
         className="form-control input-sm"
         value={current}
@@ -222,8 +224,8 @@ function SelectPageSize({
             </option>
           );
         })}
-      </select>{' '}
-      {t('page_size.entries')}
+      </select>
+      {parts[1]}
     </span>
   );
 }
