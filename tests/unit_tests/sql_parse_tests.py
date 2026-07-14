@@ -1237,6 +1237,43 @@ def test_check_sql_functions_exist() -> None:
     )
 
 
+def test_check_sql_functions_exist_denylist_bypass() -> None:
+    """
+    Regression test for CVE-2025-55674: the DISALLOWED_SQL_FUNCTIONS denylist
+    could be bypassed by inserting a comment (or extra quoting) between the
+    function name and its opening parenthesis, which hid the call from the
+    sqlparse-based check. The sqlglot-based check must catch all of these.
+    """
+    denylist = {"query_to_xml", "version"}
+
+    # the exact evasion from the pentest report: a block comment before "("
+    assert check_sql_functions_exist(
+        "query_to_xml/**/('select usename from pg_user', true, false, '')",
+        denylist,
+        "postgresql",
+    )
+
+    for evasion in (
+        "select version/**/()",
+        "select version--x\n()",
+        "select query_to_xml/**/(1)",
+        "select pg_catalog.query_to_xml/**/(1)",
+        'select "query_to_xml"(1)',
+    ):
+        assert check_sql_functions_exist(evasion, denylist, "postgresql"), evasion
+
+    # benign statements must not trip the check (no false positives)
+    for benign in (
+        "select count(*) from some_table",
+        "select versionx(1)",
+        "select a, b from version",
+    ):
+        assert not check_sql_functions_exist(benign, denylist, "postgresql"), benign
+
+    # empty denylist short-circuits to False
+    assert not check_sql_functions_exist("select version()", set(), "postgresql")
+
+
 def test_sanitize_clause_valid():
     # regular clauses
     assert sanitize_clause("col = 1") == "col = 1"
