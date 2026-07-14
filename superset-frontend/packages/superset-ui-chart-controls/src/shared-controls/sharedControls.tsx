@@ -367,6 +367,24 @@ const sort_by_metric: SharedControlConfig<'CheckboxControl'> = {
   ),
 };
 
+const value_prefix: SharedControlConfig<'TextControl'> = {
+  type: 'TextControl',
+  label: t('Prefix'),
+  renderTrigger: true,
+  isFloat: false,
+  isInt: false,
+  description: t('Text displayed before the value'),
+};
+
+const value_suffix: SharedControlConfig<'TextControl'> = {
+  type: 'TextControl',
+  label: t('Suffix'),
+  renderTrigger: true,
+  isFloat: false,
+  isInt: false,
+  description: t('Text displayed after the value'),
+};
+
 export default {
   metrics: dndAdhocMetricsControl,
   metric: dndAdhocMetricControl,
@@ -406,4 +424,6 @@ export default {
   temporal_columns_lookup,
   currency_format,
   sort_by_metric,
+  value_prefix,
+  value_suffix,
 };
