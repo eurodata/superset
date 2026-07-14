@@ -63,6 +63,19 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+# extract information for summary row
+def extract_summary_specs(form_data: dict[str, Any]) -> list[dict[str, str]]:
+    summary_specs: list[dict[str, str]] = []
+    if form_data.get("show_totals"):
+        for metric in form_data.get("metrics", []):
+            aggregate = metric.get("aggregate", "unknown")
+            label = metric.get("label", "unknown label")
+            if not aggregate or not label:
+                continue
+            summary_specs.append({"label": label, "aggregate": aggregate})
+    return summary_specs
+
+
 class QueryContextProcessor:
     """
     The query context contains the query object and additional fields necessary
@@ -258,9 +271,15 @@ class QueryContextProcessor:
                     df, index=include_index, **current_app.config["CSV_EXPORT"]
                 )
             elif self._query_context.result_format == ChartDataResultFormat.XLSX:
+                summary_specs = extract_summary_specs(
+                    self._query_context.form_data or {}
+                )
                 excel.apply_column_types(df, coltypes)
                 result = excel.df_to_excel(
-                    df, index=include_index, **current_app.config["EXCEL_EXPORT"]
+                    df,
+                    summary_specs,
+                    index=include_index,
+                    **current_app.config["EXCEL_EXPORT"],
                 )
             return result or ""
 
