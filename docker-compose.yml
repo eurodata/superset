@@ -52,7 +52,7 @@ services:
         required: true
       - path: docker/.env-local # optional override
         required: false
-    image: nginx:latest
+    image: harbor-registry.eurodata.de/docker_hub/library/nginx:latest
     restart: unless-stopped
     ports:
       - "${NGINX_PORT:-80}:80"
@@ -63,7 +63,7 @@ services:
       - ./docker/nginx/templates:/etc/nginx/templates:ro
 
   redis:
-    image: redis:7
+    image: harbor-registry.eurodata.de/docker_hub/library/redis:7
     restart: unless-stopped
     ports:
       - "127.0.0.1:${REDIS_PORT:-6379}:6379"
@@ -76,7 +76,7 @@ services:
         required: true
       - path: docker/.env-local # optional override
         required: false
-    image: postgres:17
+    image: harbor-registry.eurodata.de/docker_hub/library/postgres:17
     restart: unless-stopped
     ports:
       - "127.0.0.1:${DATABASE_PORT:-5432}:5432"
