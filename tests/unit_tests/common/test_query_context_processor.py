@@ -126,7 +126,31 @@ def test_get_data_xlsx(
     result = processor.get_data(df, coltypes)
     assert result == b"binary data"
     mock_apply_column_types.assert_called_once_with(df, coltypes)
-    mock_df_to_excel.assert_called_once_with(df, index=False)
+    # eurodata: summary_specs is always passed (empty when show_totals is unset)
+    mock_df_to_excel.assert_called_once_with(df, [], index=False)
+
+
+@patch("superset.common.query_context_processor.excel.df_to_excel")
+@patch("superset.common.query_context_processor.excel.apply_column_types")
+def test_get_data_xlsx_passes_summary_specs_when_show_totals(
+    mock_apply_column_types, mock_df_to_excel, processor, mock_query_context
+):
+    # eurodata: with show_totals set, extract_summary_specs feeds df_to_excel
+    df = pd.DataFrame({"col1": [1, 2, 3], "col2": ["a", "b", "c"]})
+    coltypes = [GenericDataType.NUMERIC, GenericDataType.STRING]
+    mock_query_context.result_format = ChartDataResultFormat.XLSX
+    mock_query_context.form_data = {
+        "show_totals": True,
+        "metrics": [{"aggregate": "SUM", "label": "col1"}],
+    }
+    mock_df_to_excel.return_value = b"binary data"
+
+    result = processor.get_data(df, coltypes)
+
+    assert result == b"binary data"
+    mock_df_to_excel.assert_called_once_with(
+        df, [{"label": "col1", "aggregate": "SUM"}], index=False
+    )
 
 
 def test_get_data_json(processor, mock_query_context):
@@ -201,7 +225,8 @@ def test_get_data_empty_dataframe_xlsx(
     result = processor.get_data(df, coltypes)
     assert result == b"binary data empty"
     mock_apply_column_types.assert_called_once_with(df, coltypes)
-    mock_df_to_excel.assert_called_once_with(df, index=False)
+    # eurodata: summary_specs is always passed (empty when show_totals is unset)
+    mock_df_to_excel.assert_called_once_with(df, [], index=False)
 
 
 def test_get_data_nan_values_json(processor, mock_query_context):

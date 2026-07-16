@@ -15,13 +15,21 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import io
 from datetime import datetime, timezone
 
 import pandas as pd
+import pytest
+from openpyxl import load_workbook
 from pandas.api.types import is_numeric_dtype
 
 from superset.utils.core import GenericDataType
-from superset.utils.excel import apply_column_types, df_to_excel
+from superset.utils.excel import (
+    apply_column_types,
+    column_number_to_letter,
+    df_to_excel,
+    get_function_num,
+)
 
 
 def test_timezone_conversion() -> None:
@@ -129,3 +137,73 @@ def test_column_data_types_with_large_numeric_values():
         "1100108628127863",
         "18014398509481984",
     ]
+
+
+@pytest.mark.parametrize(
+    "column_number,expected",
+    [
+        (0, "A"),
+        (1, "B"),
+        (25, "Z"),
+        (26, "AA"),
+        (27, "AB"),
+    ],
+)
+def test_column_number_to_letter(column_number: int, expected: str) -> None:
+    assert column_number_to_letter(column_number) == expected
+
+
+@pytest.mark.parametrize(
+    "aggregate,expected",
+    [
+        ("SUM", 109),
+        ("AVG", 101),
+        ("COUNT", 102),
+        ("MAX", 104),
+        ("MIN", 105),
+        ("COUNT_DISTINCT", None),
+        (None, None),
+    ],
+)
+def test_get_function_num_ignoring_hidden_rows(aggregate, expected) -> None:
+    # default ignore_hidden_rows=True adds 100 to the base SUBTOTAL function code
+    assert get_function_num(aggregate) == expected
+
+
+def test_get_function_num_including_hidden_rows() -> None:
+    assert get_function_num("SUM", ignore_hidden_rows=False) == 9
+
+
+def test_df_to_excel_with_summary_specs() -> None:
+    """
+    A summary row with a SUBTOTAL formula is appended for each summary spec.
+    """
+    df = pd.DataFrame({"office": ["a", "b"], "amount": [10, 20]})
+    contents = df_to_excel(df, summary_specs=[{"label": "amount", "aggregate": "SUM"}])
+
+    worksheet = load_workbook(io.BytesIO(contents)).active
+    cell_values = [cell.value for row in worksheet.iter_rows() for cell in row]
+
+    assert "Summary" in cell_values
+    formulas = [
+        value
+        for value in cell_values
+        if isinstance(value, str) and value.startswith("=SUBTOTAL")
+    ]
+    assert len(formulas) == 1
+    # 109 == SUM (9) while ignoring hidden rows (+100)
+    assert formulas[0].startswith("=SUBTOTAL(109,")
+
+
+def test_df_to_excel_without_summary_specs_has_no_formula() -> None:
+    df = pd.DataFrame({"office": ["a", "b"], "amount": [10, 20]})
+    contents = df_to_excel(df)
+
+    worksheet = load_workbook(io.BytesIO(contents)).active
+    cell_values = [cell.value for row in worksheet.iter_rows() for cell in row]
+
+    assert "Summary" not in cell_values
+    assert not any(
+        isinstance(value, str) and value.startswith("=SUBTOTAL")
+        for value in cell_values
+    )
