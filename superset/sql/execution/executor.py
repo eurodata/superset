@@ -185,6 +185,39 @@ def execute_sql_with_cursor(
     return results
 
 
+def check_disallowed_functions(script: SQLScript, engine: str) -> set[str] | None:
+    """
+    Return the disallowed SQL functions present in a parsed script.
+
+    Shared by the SQL Lab / MCP path (:class:`SQLExecutor`) and the chart/data
+    path (``Database._execute_sql_with_mutation_and_logging``) so both enforce
+    ``DISALLOWED_SQL_FUNCTIONS`` consistently. Operating on the sqlglot-parsed
+    ``SQLScript`` makes the check immune to comment-based evasion
+    (CVE-2025-55674).
+
+    :param script: Parsed SQL script
+    :param engine: Database engine name (``db_engine_spec.engine``)
+    :returns: Set of disallowed functions found, or ``None`` if none found
+    """
+    disallowed_config = app.config.get("DISALLOWED_SQL_FUNCTIONS", {})
+
+    # Get disallowed functions for this engine
+    engine_disallowed = disallowed_config.get(engine, set())
+    if not engine_disallowed:
+        return None
+
+    # Check each statement for disallowed functions
+    found = set()
+    for statement in script.statements:
+        # Use the statement's AST to check for function calls
+        statement_str = str(statement).upper()
+        for func in engine_disallowed:
+            if func.upper() in statement_str:
+                found.add(func)
+
+    return found if found else None
+
+
 class SQLExecutor:
     """
     SQL query executor implementation.
@@ -683,24 +716,7 @@ class SQLExecutor:
         :param script: Parsed SQL script
         :returns: Set of disallowed functions found, or None if none found
         """
-        disallowed_config = app.config.get("DISALLOWED_SQL_FUNCTIONS", {})
-        engine_name = self.database.db_engine_spec.engine
-
-        # Get disallowed functions for this engine
-        engine_disallowed = disallowed_config.get(engine_name, set())
-        if not engine_disallowed:
-            return None
-
-        # Check each statement for disallowed functions
-        found = set()
-        for statement in script.statements:
-            # Use the statement's AST to check for function calls
-            statement_str = str(statement).upper()
-            for func in engine_disallowed:
-                if func.upper() in statement_str:
-                    found.add(func)
-
-        return found if found else None
+        return check_disallowed_functions(script, self.database.db_engine_spec.engine)
 
     def _check_disallowed_tables(self, script: SQLScript) -> set[str] | None:
         """

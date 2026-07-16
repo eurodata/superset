@@ -67,6 +67,8 @@ from superset.commands.database.exceptions import DatabaseInvalidError
 from superset.constants import LRU_CACHE_MAX_SIZE, PASSWORD_MASK
 from superset.databases.utils import make_url_safe
 from superset.db_engine_specs.base import MetricType, TimeGrain
+from superset.errors import ErrorLevel, SupersetError, SupersetErrorType
+from superset.exceptions import SupersetSecurityException
 from superset.extensions import (
     cache_manager,
     encrypted_field_factory,
@@ -686,6 +688,24 @@ class Database(CoreDatabase, AuditMixinNullable, ImportExportMixin):  # pylint: 
         are None if not fetching.
         """
         script = SQLScript(sql, self.db_engine_spec.engine)
+
+        # Enforce the DISALLOWED_SQL_FUNCTIONS denylist on the chart/data path.
+        # The SQL Lab / MCP path is guarded in SQLExecutor; the chart/data path
+        # reaches the database only through this method, so the same check must
+        # live here too (CVE-2025-55674 follow-up: 6.1.0 left this path
+        # uncovered). Sharing the sqlglot-based check keeps it comment-immune.
+        from superset.sql.execution.executor import check_disallowed_functions
+
+        if disallowed := check_disallowed_functions(script, self.db_engine_spec.engine):
+            raise SupersetSecurityException(
+                SupersetError(
+                    message=(
+                        f"Disallowed SQL functions: {', '.join(sorted(disallowed))}"
+                    ),
+                    error_type=SupersetErrorType.INVALID_SQL_ERROR,
+                    level=ErrorLevel.ERROR,
+                )
+            )
 
         with self.get_sqla_engine(catalog=catalog, schema=schema) as engine:
             engine_url = engine.url
