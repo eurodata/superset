@@ -77,7 +77,6 @@ import { UserWithPermissionsAndRoles } from 'src/types/bootstrapTypes';
 import { findPermission } from 'src/utils/findPermission';
 import { navigateTo } from 'src/utils/navigationUtils';
 import { WIDER_DROPDOWN_WIDTH } from 'src/components/ListView/utils';
-import { ModifiedInfo } from 'src/components/AuditInfo';
 import { isUserAdmin } from 'src/dashboard/util/permissionUtils';
 
 const PAGE_SIZE = 25;

@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { styled } from '@superset-ui/core';
+import { styled } from '@apache-superset/core/theme';
 
 export const TimeRangeDisplay = styled.div`
   ${({ theme }) => `
-    color: ${theme.colors.grayscale.light5};
+    color: ${theme.colorText};
     margin-left: auto;
     padding: 0.6rem;
   `}
