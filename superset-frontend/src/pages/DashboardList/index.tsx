@@ -413,7 +413,6 @@ function DashboardList(props: DashboardListProps) {
         accessor: 'owners',
         disableSortBy: true,
         id: 'owners',
-        size: 'xl',
         hidden: !isAdmin,
       },
       {
