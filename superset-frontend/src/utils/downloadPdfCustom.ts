@@ -21,7 +21,7 @@
 import domToImage from 'dom-to-image-more';
 import { jsPDF, jsPDFOptions } from 'jspdf';
 
-const cloneNode = (node: Node, javascriptEnabled?: Boolean): Node => {
+const cloneNode = (node: Node, javascriptEnabled?: boolean): Node => {
   let child;
   const clone =
     node.nodeType === 3
@@ -103,7 +103,7 @@ const createElement = (
   return el;
 };
 
-const isCanvasBlank = (canvas: HTMLCanvasElement, bgColor: string): Boolean => {
+const isCanvasBlank = (canvas: HTMLCanvasElement, bgColor: string): boolean => {
   const blank = document.createElement('canvas');
   blank.width = canvas.width;
   blank.height = canvas.height;
@@ -283,7 +283,7 @@ const downloadPdfCustom = (
   });
 
   // Remove unnecessary elements from result pdf
-  const filterFn = ({ classList, tagName }: any): Boolean => {
+  const filterFn = ({ classList, tagName }: any): boolean => {
     let cName;
     let j;
     let len;
@@ -326,7 +326,7 @@ const downloadPdfCustom = (
     .then((canvas: any) => {
       let h;
       let imgData;
-      let page;
+      let page = 0;
       let pageHeight;
       let w;
       // Remove overlay
@@ -342,7 +342,6 @@ const downloadPdfCustom = (
       const pageCtx = pageCanvas.getContext('2d');
       pageCanvas.width = canvas.width;
       pageCanvas.height = pageHeightPx;
-      page = 0;
       while (page < nPages) {
         if (page === nPages - 1 && pxFullHeight % pageHeightPx !== 0) {
           pageCanvas.height = pxFullHeight % pageHeightPx;

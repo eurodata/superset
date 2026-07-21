@@ -1012,6 +1012,26 @@ export function getMinAndMaxFromBounds(
   return {};
 }
 
+export function getTranslatedTimeCompare(timeCompare: string) {
+  let translatedTimeCompare;
+  switch (timeCompare) {
+    case '1 day ago':
+      translatedTimeCompare = 'Vortag';
+      break;
+    case '1 week ago':
+      translatedTimeCompare = 'Vorwoche';
+      break;
+    case '1 year ago':
+      translatedTimeCompare = 'Vorjahr';
+      break;
+    default:
+      translatedTimeCompare = t(timeCompare);
+      break;
+  }
+  return translatedTimeCompare;
+}
+
+
 /**
  * Returns the stackId used in stacked series.
  * It will return the defaultId if the chart is not using time comparison.
@@ -1084,23 +1104,4 @@ export function groupData(data: DataRecord[], by?: string | null) {
     seriesMap.set(undefined, data);
   }
   return seriesMap;
-}
-
-export function getTranslatedTimeCompare(timeCompare: string) {
-  let translatedTimeCompare;
-  switch (timeCompare) {
-    case '1 day ago':
-      translatedTimeCompare = 'Vortag';
-      break;
-    case '1 week ago':
-      translatedTimeCompare = 'Vorwoche';
-      break;
-    case '1 year ago':
-      translatedTimeCompare = 'Vorjahr';
-      break;
-    default:
-      translatedTimeCompare = t(timeCompare);
-      break;
-  }
-  return translatedTimeCompare;
 }

@@ -22,7 +22,7 @@ import {
   createD3NumberFormatter,
 } from '@superset-ui/core';
 
-it('PrefixSuffixFormatter without prefix and suffix', () => {
+test('PrefixSuffixFormatter without prefix and suffix', () => {
   const prefixSuffixFormatter = new PrefixSuffixFormatter({
     formatter: createD3NumberFormatter({ formatString: '.2f' }),
   });
@@ -30,7 +30,7 @@ it('PrefixSuffixFormatter without prefix and suffix', () => {
   expect(prefixSuffixFormatter(1000)).toBe('1000.00');
 });
 
-it('PrefixSuffixFormatter with prefix', () => {
+test('PrefixSuffixFormatter with prefix', () => {
   const prefixSuffixFormatter = new PrefixSuffixFormatter({
     formatter: createD3NumberFormatter({ formatString: '.2f' }),
     prefix: 'PRE-',
@@ -39,7 +39,7 @@ it('PrefixSuffixFormatter with prefix', () => {
   expect(prefixSuffixFormatter(1000)).toBe('PRE-1000.00');
 });
 
-it('PrefixSuffixFormatter suffix', () => {
+test('PrefixSuffixFormatter suffix', () => {
   const prefixSuffixFormatter = new PrefixSuffixFormatter({
     formatter: createD3NumberFormatter({ formatString: '.2f' }),
     suffix: '-SUF',
@@ -48,7 +48,7 @@ it('PrefixSuffixFormatter suffix', () => {
   expect(prefixSuffixFormatter(1000)).toBe('1000.00-SUF');
 });
 
-it('PrefixSuffixFormatter with prefix and suffix', () => {
+test('PrefixSuffixFormatter with prefix and suffix', () => {
   const prefixSuffixFormatter = new PrefixSuffixFormatter({
     formatter: createD3NumberFormatter({ formatString: '.2f' }),
     prefix: 'PRE-',
