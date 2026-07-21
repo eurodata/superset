@@ -16,26 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { LegendOrientation } from './types';
+import { FC } from 'react';
+import { useTimeRangeText } from 'src/hooks/useTimeRangeText';
+import {
+  HorizontalBar,
+  HorizontalBarContent,
+} from './nativeFilters/FilterBar/Horizontal';
+import { TimeRangeDisplay } from './timeRangeStyles';
 
-export const defaultGrid = {
-  containLabel: true,
+type Props = {
+  defaultTimeRange?: string;
 };
 
-export const defaultYAxis = {
-  scale: true,
-  yAxisLabelRotation: 0,
+const TimeRangeTopBar: FC<Props> = ({ defaultTimeRange }) => {
+  const timeRangeText = useTimeRangeText(defaultTimeRange);
+  return (
+    <HorizontalBar>
+      <HorizontalBarContent>
+        <TimeRangeDisplay>{timeRangeText}</TimeRangeDisplay>
+      </HorizontalBarContent>
+    </HorizontalBar>
+  );
 };
 
-export const defaultXAxis = {
-  xAxisLabelRotation: 0,
-  xAxisLabelInterval: 'auto',
-  xAxisLabelLength: 10,
-};
-
-export const defaultLegendPadding = {
-  [LegendOrientation.Top]: 20,
-  [LegendOrientation.Bottom]: 20,
-  [LegendOrientation.Left]: 170,
-  [LegendOrientation.Right]: 170,
-};
+export default TimeRangeTopBar;

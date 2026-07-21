@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,26 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { LegendOrientation } from './types';
 
-export const defaultGrid = {
-  containLabel: true,
-};
+import { NumberFormatter } from '@superset-ui/core';
 
-export const defaultYAxis = {
-  scale: true,
-  yAxisLabelRotation: 0,
-};
+export default function createDurationHHMMFormatter(
+  config: {
+    multiplier?: number;
+  } = {},
+) {
+  const { multiplier = 1 } = config;
 
-export const defaultXAxis = {
-  xAxisLabelRotation: 0,
-  xAxisLabelInterval: 'auto',
-  xAxisLabelLength: 10,
-};
+  return new NumberFormatter({
+    description: 'Duration as HH:MM from milliseconds',
+    formatFunc: value => {
+      const milliseconds = value * multiplier;
+      const totalSeconds = milliseconds / 1000;
+      const totalMinutes = Math.round(totalSeconds / 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
 
-export const defaultLegendPadding = {
-  [LegendOrientation.Top]: 20,
-  [LegendOrientation.Bottom]: 20,
-  [LegendOrientation.Left]: 170,
-  [LegendOrientation.Right]: 170,
-};
+      const hh = String(hours).padStart(2, '0');
+      const mm = String(minutes).padStart(2, '0');
+      return `${hh}:${mm}`;
+    },
+    id: 'duration_format_hhmm',
+    label: `Duration formatter HHMM`,
+  });
+}

@@ -18,6 +18,7 @@
  */
 import { NumberFormatter } from '../number-format';
 import { CurrencyFormatter } from '../currency-format';
+import { PrefixSuffixFormatter } from '../prefix-suffix-format';
 
 export * from '../query/types';
 export * from './AgGrid';
@@ -28,4 +29,7 @@ export type Optional<T> = T | undefined;
 
 export type ValueOf<T> = T[keyof T];
 
-export type ValueFormatter = NumberFormatter | CurrencyFormatter;
+export type ValueFormatter =
+  | NumberFormatter
+  | CurrencyFormatter
+  | PrefixSuffixFormatter;

@@ -179,6 +179,8 @@ const config: ControlPanelConfig = {
           },
         ],
         ['currency_format'],
+        ['value_prefix'],
+        ['value_suffix'],
         [
           {
             name: 'date_format',

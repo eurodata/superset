@@ -16,26 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { LegendOrientation } from './types';
+import { styled } from '@apache-superset/core/theme';
 
-export const defaultGrid = {
-  containLabel: true,
-};
-
-export const defaultYAxis = {
-  scale: true,
-  yAxisLabelRotation: 0,
-};
-
-export const defaultXAxis = {
-  xAxisLabelRotation: 0,
-  xAxisLabelInterval: 'auto',
-  xAxisLabelLength: 10,
-};
-
-export const defaultLegendPadding = {
-  [LegendOrientation.Top]: 20,
-  [LegendOrientation.Bottom]: 20,
-  [LegendOrientation.Left]: 170,
-  [LegendOrientation.Right]: 170,
-};
+export const TimeRangeDisplay = styled.div`
+  ${({ theme }) => `
+    color: ${theme.colorText};
+    margin-left: auto;
+    padding: 0.6rem;
+  `}
+`;

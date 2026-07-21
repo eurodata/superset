@@ -467,6 +467,24 @@ const echart_options: SharedControlConfig<'JSEditorControl'> = {
   validators: [],
 };
 
+const value_prefix: SharedControlConfig<'TextControl'> = {
+  type: 'TextControl',
+  label: t('Prefix'),
+  renderTrigger: true,
+  isFloat: false,
+  isInt: false,
+  description: t('Text displayed before the value'),
+};
+
+const value_suffix: SharedControlConfig<'TextControl'> = {
+  type: 'TextControl',
+  label: t('Suffix'),
+  renderTrigger: true,
+  isFloat: false,
+  isInt: false,
+  description: t('Text displayed after the value'),
+};
+
 const sharedControls: Record<string, SharedControlConfig<any>> = {
   metrics: dndAdhocMetricsControl,
   metric: dndAdhocMetricControl,
@@ -514,7 +532,8 @@ const sharedControls: Record<string, SharedControlConfig<any>> = {
   sort_by_metric,
   order_by_cols,
   echart_options,
-
+  value_prefix,
+  value_suffix,
   // Add all Matrixify controls
   ...matrixifyControls,
 };

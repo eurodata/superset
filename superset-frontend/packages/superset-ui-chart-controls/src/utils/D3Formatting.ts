@@ -68,6 +68,8 @@ export const D3_FORMAT_OPTIONS: [string, string][] = [
     'MEMORY_TRANSFER_RATE_BINARY',
     t('Memory transfer rate in bytes - binary (1024B => 1KiB/s)'),
   ],
+  ['DURATION_HHMM_MS', t('Duration in ms as HH:MM (91800000 => 25:30)')],
+  ['DURATION_HHMM_H', t('Duration in h as HH:MM (25.5 => 25:30)')],
 ];
 
 export const D3_TIME_FORMAT_DOCS = t(
