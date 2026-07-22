@@ -278,7 +278,7 @@ class QueryContextProcessor:
                 result = excel.df_to_excel(
                     df,
                     summary_specs,
-                    index=include_index,
+                    index=True,
                     **current_app.config["EXCEL_EXPORT"],
                 )
             return result or ""
