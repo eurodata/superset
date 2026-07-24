@@ -3,8 +3,7 @@ name: release-workflow
 on:
   push:
     branches:
-      - "master"
-      - "[0-9].[0-9]*"
+      - "eurodata-on-6-1-0"
 
 jobs:
   config:

@@ -3,11 +3,10 @@ name: Build & publish docker images
 on:
   push:
     branches:
-      - "master"
-      - "[0-9].[0-9]*"
+      - "eurodata-on-6-1-0"
   pull_request:
     branches:
-      - "master"
+      - "eurodata-master"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
@@ -21,7 +20,7 @@ jobs:
     steps:
       - id: set_matrix
         run: |
-          MATRIX_CONFIG=$(if [ "${{ github.event_name }}" == "pull_request" ]; then echo '["dev", "lean"]'; else echo '["dev", "lean", "py310", "websocket", "dockerize", "py311", "py312"]'; fi)
+          MATRIX_CONFIG=$(if [ "${{ github.event_name }}" == "pull_request" ]; then echo '["dev"]'; else echo '["lean"]'; fi)
           echo "matrix_config=${MATRIX_CONFIG}" >> $GITHUB_OUTPUT
           echo $GITHUB_OUTPUT
 
@@ -34,9 +33,7 @@ jobs:
         build_preset: ${{fromJson(needs.setup_matrix.outputs.matrix_config)}}
       fail-fast: false
     env:
-      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      IMAGE_TAG: apache/superset:GHA-${{ matrix.build_preset }}-${{ github.run_id }}
+      IMAGE_TAG: ghcr.io/eurodata/superset:eurodata-on-6-1-0
 
     steps:
       - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} )"
@@ -44,55 +41,54 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Check for file changes
-        id: check
-        uses: ./.github/actions/change-detector/
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
 
-      - name: Setup Docker Environment
-        if: steps.check.outputs.python || steps.check.outputs.frontend || steps.check.outputs.docker
-        uses: ./.github/actions/setup-docker
-        with:
-          dockerhub-user: ${{ secrets.DOCKERHUB_USER }}
-          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
-          build: "true"
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      - name: Setup supersetbot
-        if: steps.check.outputs.python || steps.check.outputs.frontend || steps.check.outputs.docker
-        uses: ./.github/actions/setup-supersetbot/
+      - name:  Login to GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker Image
-        if: steps.check.outputs.python || steps.check.outputs.frontend || steps.check.outputs.docker
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Single platform builds in pull_request context to speed things up
-          if [ "${{ github.event_name }}" = "push" ]; then
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
             PLATFORM_ARG="--platform linux/arm64 --platform linux/amd64"
             # can only --load images in single-platform builds
             PUSH_OR_LOAD="--push"
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+          elif [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             PLATFORM_ARG="--platform linux/amd64"
             PUSH_OR_LOAD="--load"
           fi
-
-          supersetbot docker \
-            $PUSH_OR_LOAD \
-            --preset ${{ matrix.build_preset }} \
-            --context "$EVENT" \
-            --context-ref "$RELEASE" $FORCE_LATEST \
-            --extra-flags "--build-arg INCLUDE_CHROMIUM=false --tag $IMAGE_TAG" \
-            $PLATFORM_ARG
+          docker buildx build \
+            -t "$IMAGE_TAG" \
+            $PUSH_OR_LOAD  \
+            --cache-from=type=registry,ref=apache/superset-cache:3.11.14-slim-trixie \
+            --target ${{ matrix.build_preset }} \
+            --build-arg PY_VER=3.11.14-slim-trixie \
+            $PLATFORM_ARG \
+            --label ${{ github.sha }} \
+            --label target=${{ matrix.build_preset }} \
+            --label build_trigger= \
+            --label base=3.11.14-slim-trixie \
+            --label build_actor=${{ github.actor }} \
+          .
 
       # in the context of push (using multi-platform build), we need to pull the image locally
       - name: Docker pull
-        if: github.event_name == 'push' && (steps.check.outputs.python || steps.check.outputs.frontend || steps.check.outputs.docker)
+        if: github.event_name == 'push'
         run: docker pull $IMAGE_TAG
 
       - name: Print docker stats
-        if: steps.check.outputs.python || steps.check.outputs.frontend || steps.check.outputs.docker
         run: |
           echo "SHA: ${{ github.sha }}"
           echo "IMAGE: $IMAGE_TAG"
@@ -100,39 +96,10 @@ jobs:
           docker history $IMAGE_TAG
 
       - name: docker-compose sanity check
-        if: (steps.check.outputs.python || steps.check.outputs.frontend || steps.check.outputs.docker) && matrix.build_preset == 'dev'
+        if: matrix.build_preset == 'dev'
         shell: bash
         run: |
           export SUPERSET_BUILD_TARGET=${{ matrix.build_preset }}
           # This should reuse the CACHED image built in the previous steps
           docker compose build superset-init --build-arg DEV_MODE=false --build-arg INCLUDE_CHROMIUM=false
           docker compose up superset-init --exit-code-from superset-init
-
-  docker-compose-image-tag:
-    # Run this job only on pushes to master (not for PRs)
-    # goal is to check that building the latest image works, not required for all PR pushes
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    runs-on: ubuntu-24.04
-    steps:
-      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} )"
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          persist-credentials: false
-      - name: Check for file changes
-        id: check
-        uses: ./.github/actions/change-detector/
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Setup Docker Environment
-        if: steps.check.outputs.docker
-        uses: ./.github/actions/setup-docker
-        with:
-          dockerhub-user: ${{ secrets.DOCKERHUB_USER }}
-          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
-          build: "false"
-          install-docker-compose: "true"
-      - name: docker-compose sanity check
-        if: steps.check.outputs.docker
-        shell: bash
-        run: |
-          docker compose -f docker-compose-image-tag.yml up superset-init --exit-code-from superset-init
