@@ -30,8 +30,8 @@ import {
   NumberFormatter,
   TimeFormatter,
   ValueFormatter,
-  t,
 } from '@superset-ui/core';
+import { t } from '@apache-superset/core/translation';
 import { SupersetTheme } from '@apache-superset/core/theme';
 import { GenericDataType } from '@apache-superset/core/common';
 import { SortSeriesType, LegendPaddingType } from '@superset-ui/chart-controls';
