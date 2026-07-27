@@ -149,7 +149,7 @@ def test_get_data_xlsx_passes_summary_specs_when_show_totals(
 
     assert result == b"binary data"
     mock_df_to_excel.assert_called_once_with(
-        df, [{"label": "col1", "aggregate": "SUM"}], index=False
+        df, [{"label": "col1", "aggregate": "SUM"}], index=True
     )
 
 
