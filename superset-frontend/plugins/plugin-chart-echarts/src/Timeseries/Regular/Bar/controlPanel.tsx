@@ -58,8 +58,14 @@ import {
 } from '../../constants';
 import { StackControlsValue } from '../../../constants';
 
-const { logAxis, minorSplitLine, truncateYAxis, yAxisBounds, orientation, xAxisLabelLength } =
-  DEFAULT_FORM_DATA;
+const {
+  logAxis,
+  minorSplitLine,
+  truncateYAxis,
+  yAxisBounds,
+  orientation,
+  xAxisLabelLength,
+} = DEFAULT_FORM_DATA;
 
 function createAxisTitleControl(axis: 'x' | 'y'): ControlSetRow[] {
   const isXAxis = axis === 'x';

@@ -659,7 +659,7 @@ function DashboardList(props: DashboardListProps) {
               dropdownStyle: { minWidth: WIDER_DROPDOWN_WIDTH },
             },
           ]
-        : []),    
+        : []),
     ] as ListViewFilters;
     return filtersList;
   }, [addDangerToast, canReadTag, favoritesFilter, user]);

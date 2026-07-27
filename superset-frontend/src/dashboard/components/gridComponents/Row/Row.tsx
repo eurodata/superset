@@ -271,9 +271,9 @@ const Row = memo((props: RowProps) => {
   const remainColumnCount = availableColumnCount - occupiedColumnCount;
 
   const hiddenElements = getBootstrapData()?.user?.hidden_elements || [];
-      const visibleRowItems = rowItems.filter(
-        id => !hiddenElements.includes(id) || editMode,
-      );
+  const visibleRowItems = rowItems.filter(
+    id => !hiddenElements.includes(id) || editMode,
+  );
 
   const renderChild = useCallback(
     ({ dragSourceRef }: { dragSourceRef: RefObject<HTMLDivElement> }) => (

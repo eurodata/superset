@@ -1031,7 +1031,6 @@ export function getTranslatedTimeCompare(timeCompare: string) {
   return translatedTimeCompare;
 }
 
-
 /**
  * Returns the stackId used in stacked series.
  * It will return the defaultId if the chart is not using time comparison.

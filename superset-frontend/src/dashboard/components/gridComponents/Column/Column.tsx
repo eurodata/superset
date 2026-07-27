@@ -208,7 +208,9 @@ const Column = (props: ColumnProps) => {
         adjustableWidth
         adjustableHeight={false}
         widthStep={columnWidth}
-        widthMultiple={resizeToFullWidth ? 12 : columnComponent.meta.width ?? 0}
+        widthMultiple={
+          resizeToFullWidth ? 12 : (columnComponent.meta.width ?? 0)
+        }
         heightMultiple={0}
         minWidthMultiple={minColumnWidth}
         maxWidthMultiple={
