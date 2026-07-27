@@ -45,7 +45,7 @@ export type User = {
   lastName: string;
   userId?: number; // optional because guest user doesn't have a user id
   username: string;
-  loginCount?: number,
+  loginCount?: number;
   hidden_elements?: string[];
 };
 

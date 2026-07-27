@@ -46,7 +46,7 @@ export function cleanColorInput(value) {
  * Otherwise, format number with the given format name
  * @param {*} format
  */
-export function getTimeOrNumberFormatter(format) {
+export function getTimeOrNumberFormatter(format?: any) {
   return format === SMART_DATE_ID
     ? getTimeFormatter(SMART_DATE_ID)
     : getNumberFormatter(format);
