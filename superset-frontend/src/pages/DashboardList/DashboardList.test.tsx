@@ -61,6 +61,21 @@ afterEach(() => {
   mockIsFeatureEnabled.mockReset();
 });
 
+const fullMockAdminUser = {
+  userId: 1,
+  firstName: 'Admin',
+  lastName: 'User',
+  username: 'admin',
+  permissions: [],
+  roles: {
+    Admin: [
+      ['can_write', 'Dashboard'],
+      ['can_export', 'Dashboard'],
+      ['can_read', 'Tag'],
+    ],
+  },
+};
+
 test('renders', async () => {
   renderDashboardList(mockAdminUser);
   expect(await screen.findByText('Dashboards')).toBeInTheDocument();
@@ -179,8 +194,8 @@ test('renders an "Import Dashboard" tooltip', async () => {
   ).toBeInTheDocument();
 });
 
-test('renders all standard filters', async () => {
-  renderDashboardList(mockAdminUser);
+test('renders all standard filters (admin)', async () => {
+  renderDashboardList(fullMockAdminUser);
   await screen.findByTestId('dashboard-list-view');
 
   // Verify filter labels exist
@@ -190,8 +205,19 @@ test('renders all standard filters', async () => {
   expect(screen.getByText('Certified')).toBeInTheDocument();
 });
 
-test('selecting Status filter encodes published=true in API call', async () => {
+test('removed filters (non admin)', async () => {
   renderDashboardList(mockAdminUser);
+  await screen.findByTestId('dashboard-list-view');
+
+  // Verify filter labels exist
+  expect(screen.queryByText('Owner')).not.toBeInTheDocument();
+  expect(screen.queryByText('Status')).not.toBeInTheDocument();
+  expect(screen.queryByText('Modified by')).not.toBeInTheDocument();
+  expect(screen.queryByText('Certified')).not.toBeInTheDocument();
+});
+
+test('selecting Status filter encodes published=true in API call', async () => {
+  renderDashboardList(fullMockAdminUser);
   await screen.findByTestId('dashboard-list-view');
 
   await waitFor(() => {
@@ -233,7 +259,7 @@ test('selecting Owner filter encodes rel_m_m owner in API call', async () => {
     throw new Error(`[fetchMock catch-all] Unmatched GET: ${reqUrl}`);
   });
 
-  renderDashboardList(mockAdminUser);
+  renderDashboardList(fullMockAdminUser);
   await screen.findByTestId('dashboard-list-view');
 
   await waitFor(() => {
@@ -278,7 +304,7 @@ test('selecting Modified by filter encodes rel_o_m changed_by in API call', asyn
     throw new Error(`[fetchMock catch-all] Unmatched GET: ${reqUrl}`);
   });
 
-  renderDashboardList(mockAdminUser);
+  renderDashboardList(fullMockAdminUser);
   await screen.findByTestId('dashboard-list-view');
 
   await waitFor(() => {

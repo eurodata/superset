@@ -76,5 +76,6 @@ export default function createMemoryFormatter(
     formatFunc: formatMemory(binary, decimals, transfer),
     id: id ?? 'memory_format',
     label: label ?? `Memory formatter`,
+    localizeCompactSuffixes: false,
   });
 }

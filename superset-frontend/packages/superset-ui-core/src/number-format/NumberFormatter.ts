@@ -30,6 +30,7 @@ export interface NumberFormatterConfig {
   description?: string;
   formatFunc: NumberFormatFunction;
   isInvalid?: boolean;
+  localizeCompactSuffixes?: boolean;
 }
 
 const NON_BREAKING_SPACE = '\u00A0';
@@ -51,6 +52,8 @@ class NumberFormatter extends ExtensibleFunction {
 
   isInvalid: boolean;
 
+  localizeCompactSuffixes: boolean;
+
   constructor(config: NumberFormatterConfig) {
     super((value: number) => this.format(value));
 
@@ -60,12 +63,14 @@ class NumberFormatter extends ExtensibleFunction {
       description = '',
       formatFunc = isRequired('config.formatFunc'),
       isInvalid = false,
+      localizeCompactSuffixes = true,
     } = config;
     this.id = id;
     this.label = label ?? id;
     this.description = description;
     this.formatFunc = formatFunc;
     this.isInvalid = isInvalid;
+    this.localizeCompactSuffixes = localizeCompactSuffixes;
   }
 
   format(value: number | null | undefined) {
@@ -79,7 +84,13 @@ class NumberFormatter extends ExtensibleFunction {
       return '-∞';
     }
     let formattedValue = this.formatFunc(value);
+
+    if (!this.localizeCompactSuffixes) {
+      return formattedValue;
+    }
+
     const absoluteNumber: number = Math.abs(value);
+
     if (absoluteNumber >= 1000 && absoluteNumber < 1000000) {
       formattedValue = formattedValue.replace('k', `${NON_BREAKING_SPACE}Tsd`);
     } else if (absoluteNumber >= 1000000 && absoluteNumber < 1000000000) {

@@ -61,6 +61,20 @@ const mockUser = {
   },
 };
 
+const mockAdminUser = {
+  userId: 1,
+  firstName: 'Test',
+  lastName: 'User',
+  username: 'testuser',
+  permissions: [],
+  roles: {
+    Admin: [
+      ['can_write', 'Dashboard'],
+      ['can_export', 'Dashboard'],
+    ],
+  },
+};
+
 beforeEach(() => {
   mockHandleResourceExport.mockClear();
   setupMocks();
@@ -87,8 +101,8 @@ test('renders table in list view', async () => {
   expect(screen.queryByTestId('styled-card')).not.toBeInTheDocument();
 });
 
-test('renders all required column headers', async () => {
-  renderDashboardList(mockUser);
+test('renders all required column headers (Admin)', async () => {
+  renderDashboardList(mockAdminUser);
 
   await waitFor(() => {
     expect(screen.getByTestId('listview-table')).toBeInTheDocument();
@@ -106,6 +120,35 @@ test('renders all required column headers', async () => {
 
   expectedHeaders.forEach(headerText => {
     expect(within(table).getByTitle(headerText)).toBeInTheDocument();
+  });
+});
+
+test('renders all required column headers (no owners column)', async () => {
+  renderDashboardList(mockUser);
+
+  await waitFor(() => {
+    expect(screen.getByTestId('listview-table')).toBeInTheDocument();
+  });
+
+  const table = screen.getByTestId('listview-table');
+
+  const expectedHeaders = [
+    'Name',
+    'Status',
+    'Last modified',
+    'Actions',
+  ];
+
+  const expectedRemovedHeaders = [
+    'Owners',
+  ];
+
+  expectedHeaders.forEach(headerText => {
+    expect(within(table).getByTitle(headerText)).toBeInTheDocument();
+  });
+
+  expectedRemovedHeaders.forEach(headerText => {
+    expect(within(table).queryByTitle(headerText)).not.toBeInTheDocument();
   });
 });
 
