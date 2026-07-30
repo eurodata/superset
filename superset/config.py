@@ -992,6 +992,8 @@ THEME_DARK: Optional[Theme] = {
     "algorithm": "dark",
 }
 
+THEME_DARK = NONE;
+
 # Theme behavior and user preference settings
 # To force a single theme on all users, set THEME_DARK = None
 # When both THEME_DEFAULT and THEME_DARK are defined:

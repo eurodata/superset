@@ -74,6 +74,7 @@ jobs:
             $PUSH_OR_LOAD  \
             --cache-from=type=registry,ref=apache/superset-cache:3.11.14-slim-trixie \
             --target ${{ matrix.build_preset }} \
+            --build-arg BUILD_TRANSLATIONS=true \
             --build-arg PY_VER=3.11.14-slim-trixie \
             $PLATFORM_ARG \
             --label ${{ github.sha }} \
