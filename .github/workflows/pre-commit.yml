@@ -39,6 +39,7 @@ jobs:
           echo "HOMEBREW_PREFIX=$HOMEBREW_PREFIX" >>"${GITHUB_ENV}"
           echo "HOMEBREW_CELLAR=$HOMEBREW_CELLAR" >>"${GITHUB_ENV}"
           echo "HOMEBREW_REPOSITORY=$HOMEBREW_REPOSITORY" >>"${GITHUB_ENV}"
+          brew trust norwoodj/tap
           brew install norwoodj/tap/helm-docs
       - name: Setup Node.js
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
