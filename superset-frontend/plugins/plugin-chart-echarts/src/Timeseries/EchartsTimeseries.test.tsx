@@ -143,6 +143,7 @@ const defaultFormData: EchartsTimeseriesFormData & {
   richTooltip: false,
   xAxisLabelRotation: 0,
   xAxisLabelInterval: 0,
+  xAxisLabelLength: 10,
   showValue: false,
   onlyTotal: false,
   showExtraControls: true,
