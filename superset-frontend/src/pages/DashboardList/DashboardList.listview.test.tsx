@@ -132,16 +132,9 @@ test('renders all required column headers (no owners column)', async () => {
 
   const table = screen.getByTestId('listview-table');
 
-  const expectedHeaders = [
-    'Name',
-    'Status',
-    'Last modified',
-    'Actions',
-  ];
+  const expectedHeaders = ['Name', 'Status', 'Last modified', 'Actions'];
 
-  const expectedRemovedHeaders = [
-    'Owners',
-  ];
+  const expectedRemovedHeaders = ['Owners'];
 
   expectedHeaders.forEach(headerText => {
     expect(within(table).getByTitle(headerText)).toBeInTheDocument();
