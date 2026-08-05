@@ -7939,9 +7939,8 @@ msgstr "Lade..."
 msgid "Loading..."
 msgstr "Lade..."
 
-#, fuzzy
 msgid "Local"
-msgstr "Logarithmische Skala"
+msgstr "Lokal"
 
 msgid "Local theme set for preview"
 msgstr ""
