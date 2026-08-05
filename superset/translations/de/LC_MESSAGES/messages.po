@@ -3109,12 +3109,11 @@ msgstr "Alle Daten leeren"
 msgid "Clear all filters"
 msgstr "Alle Filter löschen"
 
-#, fuzzy
 msgid "Clear default dark theme"
-msgstr "Standard-Datum/Zeit"
+msgstr "Standard-Dark-Theme entfernen"
 
 msgid "Clear default light theme"
-msgstr ""
+msgstr "Standard-Light-Theme entfernen"
 
 msgid "Clear form"
 msgstr "Formular zurücksetzen"
@@ -6060,13 +6059,11 @@ msgstr "Alle Daten leeren"
 msgid "Export Current View"
 msgstr "Aktuelle Seite umkehren"
 
-#, fuzzy
 msgid "Export YAML"
-msgstr "Berichtsname"
+msgstr "YAML exportieren"
 
-#, fuzzy
 msgid "Export as Example"
-msgstr "Exportieren nach Excel"
+msgstr "Als Beispierl exportieren"
 
 #, fuzzy
 msgid "Export cancelled"
@@ -6418,9 +6415,8 @@ msgstr "Filtern Sie Ihre Diagramme"
 msgid "Filters"
 msgstr "Filter"
 
-#, fuzzy
 msgid "Filters and controls"
-msgstr "Zusätzliche Bedienelemente"
+msgstr "Filter"
 
 msgid "Filters by columns"
 msgstr "Nach Spalten filtern"
@@ -11568,19 +11564,16 @@ msgid "Service version"
 msgstr "Dienstkonto"
 
 msgid "Set System Dark Theme"
-msgstr ""
+msgstr "Als System-Dark-Theme festlegen"
 
-#, fuzzy
 msgid "Set System Default Theme"
-msgstr "Standard-Datum/Zeit"
+msgstr "Als System-Standard-Theme festlegen"
 
-#, fuzzy
 msgid "Set as default dark theme"
-msgstr "Standard-Datum/Zeit"
+msgstr "Als Standard-Dark-Theme festlegen"
 
-#, fuzzy
 msgid "Set as default light theme"
-msgstr "Filter hat den Standardwert"
+msgstr "Als Standard-Light-Theme festlegen"
 
 #, fuzzy
 msgid "Set auto-refresh"
@@ -11589,9 +11582,8 @@ msgstr "Auto-Aktualisieren-Interval setzen"
 msgid "Set filter mapping"
 msgstr "Festlegen der Filterzuordnung"
 
-#, fuzzy
 msgid "Set local theme for testing"
-msgstr "Aktivieren von Prognosen"
+msgstr "Lokales Theme zum Testen aktivieren"
 
 msgid "Set local theme for testing (preview only)"
 msgstr ""
@@ -12369,9 +12361,8 @@ msgstr "Stil"
 msgid "Style the ends of the progress bar with a round cap"
 msgstr "Enden des Fortschrittsbalkens mit einer runden Kappe versehen"
 
-#, fuzzy
 msgid "Styling"
-msgstr "TEXT"
+msgstr "Styling"
 
 #, fuzzy
 msgid "Subcategories"
