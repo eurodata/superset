@@ -216,19 +216,19 @@ export const useDownloadMenuItems = (
       ];
 
   const exportMenuItems: MenuItem[] = userCanExport
-  ? [
-      {
-        key: 'export-yaml',
-        label: t('Export YAML'),
-        onClick: onExportZip,
-      },
-      {
-        key: 'export-as-example',
-        label: t('Export as Example'),
-        onClick: onExportAsExample,
-      },
-    ]
-  : [];
+    ? [
+        {
+          key: 'export-yaml',
+          label: t('Export YAML'),
+          onClick: onExportZip,
+        },
+        {
+          key: 'export-as-example',
+          label: t('Export as Example'),
+          onClick: onExportAsExample,
+        },
+      ]
+    : [];
 
   const children: MenuItem[] = [
     ...screenshotMenuItems,
