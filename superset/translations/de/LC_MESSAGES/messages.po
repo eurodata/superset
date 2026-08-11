@@ -3056,9 +3056,8 @@ msgstr ""
 "Wählen Sie aus, ob ein Land anhand der Metrik eingefärbt oder eine Farbe "
 "basierend auf einer kategorialen Farbpalette zugewiesen werden soll."
 
-#, fuzzy
 msgid "Choose..."
-msgstr "Wählen Sie eine Datenbank..."
+msgstr "Wähle..."
 
 msgid "Chord Diagram"
 msgstr "Sehnendiagramm"
@@ -3590,7 +3589,7 @@ msgid "Confirm save"
 msgstr "Speichern bestätigen"
 
 msgid "Confirm the user's password"
-msgstr ""
+msgstr "Bestätigen Sie das Passwort des Users"
 
 msgid "Connect"
 msgstr "Verbinden"
@@ -5439,9 +5438,8 @@ msgstr "Regel bearbeiten"
 msgid "Edit Tag"
 msgstr "Schlagwort bearbeiten"
 
-#, fuzzy
 msgid "Edit User"
-msgstr "Abfrage bearbeiten"
+msgstr "User bearbeiten"
 
 #, fuzzy
 msgid "Edit alert"
@@ -5549,13 +5547,11 @@ msgstr "Neu laden"
 msgid "Elevation"
 msgstr "Höhendaten"
 
-#, fuzzy
 msgid "Email"
-msgstr "Details"
+msgstr "E-Mail-Adresse"
 
-#, fuzzy
 msgid "Email is required"
-msgstr "Wert ist erforderlich"
+msgstr "E-Mail-Adresse ist erforderlich"
 
 #, fuzzy
 msgid "Email link"
@@ -5781,7 +5777,7 @@ msgid "Enter the unique project id for your database."
 msgstr ""
 
 msgid "Enter the user's email"
-msgstr "Geben Sie den E-Mail-Adresse des Users ein"
+msgstr "Geben Sie die E-Mail-Adresse des Users ein"
 
 msgid "Enter the user's first name"
 msgstr "Geben Sie den Vornamen des Users ein"
@@ -7867,19 +7863,17 @@ msgstr "Zeilenkodierung"
 msgid "List"
 msgstr "Letzte"
 
-#, fuzzy
 msgid "List Groups"
-msgstr "Zahl aufteilen"
+msgstr "Gruppen auflisten"
 
 msgid "List Roles"
-msgstr ""
+msgstr "Rollen auflisten"
 
 msgid "List Unique Values"
 msgstr "Eindeutige Werte auflisten"
 
-#, fuzzy
 msgid "List Users"
-msgstr "Zahl aufteilen"
+msgstr "User auflisten"
 
 msgid "List of extra columns made available in JavaScript functions"
 msgstr ""
@@ -9531,9 +9525,8 @@ msgstr "Zeiträume"
 msgid "Periods must be a whole number"
 msgstr "Perioden müssen eine ganze Zahl sein"
 
-#, fuzzy
 msgid "Permissions"
-msgstr "Version"
+msgstr "Berechtigungen"
 
 #, python-format
 msgid "Permissions successfully synced for %s"
@@ -10538,13 +10531,11 @@ msgstr ""
 msgid "Role"
 msgstr "Rolle"
 
-#, fuzzy
 msgid "Role Name"
-msgstr "Name des Alarms"
+msgstr "Name der Rolle"
 
-#, fuzzy
 msgid "Role name is required"
-msgstr "Name ist erforderlich"
+msgstr "Name der Rolle ist erforderlich"
 
 msgid "Roles"
 msgstr "Rollen"
@@ -11016,13 +11007,11 @@ msgstr "Suchspalten"
 msgid "Search in filters"
 msgstr "Suche in Filtern"
 
-#, fuzzy
 msgid "Search owners"
-msgstr "Besitzende auswählen"
+msgstr "Besitzende suchen"
 
-#, fuzzy
 msgid "Search roles"
-msgstr "Suchspalten"
+msgstr "Rollen suchen"
 
 #, fuzzy
 msgid "Search tags"
@@ -11301,12 +11290,11 @@ msgid "Select filter plugin using AntD"
 msgstr "Filter-Plugin mit AntD auswählen"
 
 msgid "Select first filter value by default"
-msgstr "Standardmäßig erste Ersten Filterwert auswählen"
+msgstr "Standardmäßig ersten Filterwert auswählen"
 
 msgid "Select format"
 msgstr "Format auswählen"
 
-#, fuzzy
 msgid "Select groups"
 msgstr "Besitzende auswählen"
 
@@ -11362,9 +11350,8 @@ msgstr "Besitzende auswählen"
 msgid "Select page size"
 msgstr "Schlagwörter auswählen"
 
-#, fuzzy
 msgid "Select roles"
-msgstr "Besitzende auswählen"
+msgstr "Rollen auswählen"
 
 msgid "Select saved metrics"
 msgstr "Gespeicherte Metriken auswählen"
@@ -11449,13 +11436,11 @@ msgstr "Wählen Sie die GeoJSON-Spalte aus"
 msgid "Select the type of color scheme to use."
 msgstr "Farbschema auswählen"
 
-#, fuzzy
 msgid "Select users"
-msgstr "Besitzende auswählen"
+msgstr "Benutzer auswählen"
 
-#, fuzzy
 msgid "Select values"
-msgstr "Besitzende auswählen"
+msgstr "Werte auswählen"
 
 #, python-format
 msgid ""
@@ -13670,9 +13655,8 @@ msgstr "Die Breite der Linien"
 msgid "The width of the lines"
 msgstr "Die Breite der Linien"
 
-#, fuzzy
 msgid "Theme"
-msgstr "Zeit"
+msgstr "Theme"
 
 #, fuzzy
 msgid "Theme imported"
@@ -13682,9 +13666,8 @@ msgstr "Datensatz importiert"
 msgid "Theme not found."
 msgstr "CSS-Vorlage nicht gefunden."
 
-#, fuzzy
 msgid "Themes"
-msgstr "Zeit"
+msgstr "Themes"
 
 #, fuzzy
 msgid "Themes could not be deleted."
@@ -17232,9 +17215,8 @@ msgstr "Symbol für Zeittyp"
 msgid "textarea"
 msgstr "Textfeld"
 
-#, fuzzy
 msgid "theme"
-msgstr "Zeit"
+msgstr "Theme"
 
 #, fuzzy
 msgid "to"
