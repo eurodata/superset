@@ -13736,9 +13736,8 @@ msgstr ""
 "In der SQL-Abfrage liegt ein Syntaxfehler vor. Vielleicht gab es einen "
 "Rechtschreibfehler oder einen Tippfehler."
 
-#, fuzzy
 msgid "There is currently no information to display."
-msgstr "Der anzuzeigende Visualisierungstyp"
+msgstr "Derzeit gibt es keine Informationen zum Anzeigen."
 
 msgid ""
 "There is no chart definition associated with this component, could it "
