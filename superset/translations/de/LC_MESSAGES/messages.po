@@ -5764,17 +5764,14 @@ msgstr ""
 msgid "Enter report name"
 msgstr "Name des Berichts"
 
-#, fuzzy
 msgid "Enter the group's description"
-msgstr "Diagrammbeschreibung ausblenden"
+msgstr "Geben Sie die Beschreibung der Gruppe ein"
 
-#, fuzzy
 msgid "Enter the group's label"
-msgstr "Name des Alarms"
+msgstr "Geben Sie die Beschriftung der Gruppe ein"
 
-#, fuzzy
 msgid "Enter the group's name"
-msgstr "Name des Alarms"
+msgstr "Geben Sie den Namen der Gruppe ein"
 
 #, python-format
 msgid "Enter the required %(dbModelName)s credentials"
@@ -5784,26 +5781,22 @@ msgid "Enter the unique project id for your database."
 msgstr ""
 
 msgid "Enter the user's email"
-msgstr ""
+msgstr "Geben Sie den E-Mail-Adresse des Users ein"
 
-#, fuzzy
 msgid "Enter the user's first name"
-msgstr "Name des Alarms"
+msgstr "Geben Sie den Vornamen des Users ein"
 
-#, fuzzy
 msgid "Enter the user's last name"
-msgstr "Name des Alarms"
+msgstr "Geben Sie den Nachnamen des Users ein"
 
-#, fuzzy
 msgid "Enter the user's password"
-msgstr "Name des Alarms"
+msgstr "Geben Sie das Passwort des Users ein"
 
 msgid "Enter the user's username"
-msgstr ""
+msgstr "Geben Sie den Benutzernamen des Users ein"
 
-#, fuzzy
 msgid "Enter theme name"
-msgstr "Name des Alarms"
+msgstr "Geben Sie den Namen des Themes ein"
 
 msgid "Enter your login and password below:"
 msgstr ""
@@ -6470,17 +6463,14 @@ msgstr "Fertigstellen"
 msgid "First"
 msgstr "Erste"
 
-#, fuzzy
 msgid "First Name"
-msgstr "Diagrammname"
+msgstr "Vorname"
 
-#, fuzzy
 msgid "First name"
-msgstr "Diagrammname"
+msgstr "Vorname"
 
-#, fuzzy
 msgid "First name is required"
-msgstr "Name ist erforderlich"
+msgstr "Vorname ist erforderlich"
 
 #, fuzzy
 msgid "Fit columns dynamically"
@@ -7395,13 +7385,11 @@ msgstr "Auswahl umkehren"
 msgid "Invert current page"
 msgstr "Aktuelle Seite umkehren"
 
-#, fuzzy
 msgid "Is Active?"
-msgstr "Alarm ist aktiv"
+msgstr "Ist Aktiv"
 
-#, fuzzy
 msgid "Is active?"
-msgstr "Alarm ist aktiv"
+msgstr "Ist aktiv"
 
 msgid "Is certified"
 msgstr "Zertifiziert"
@@ -7623,9 +7611,8 @@ msgstr "Groß"
 msgid "Last"
 msgstr "Letzte"
 
-#, fuzzy
 msgid "Last Name"
-msgstr "Datensatzname"
+msgstr "Nachname"
 
 #, python-format
 msgid "Last Updated %s"
@@ -7652,13 +7639,11 @@ msgstr "Zuletzt geändert"
 msgid "Last month"
 msgstr "Letzter Monat"
 
-#, fuzzy
 msgid "Last name"
-msgstr "Datensatzname"
+msgstr "Nachname"
 
-#, fuzzy
 msgid "Last name is required"
-msgstr "Name ist erforderlich"
+msgstr "Nachname ist erforderlich"
 
 msgid "Last quarter"
 msgstr "Letztes Quartal"
@@ -9732,25 +9717,20 @@ msgstr ""
 "Bitte geben Sie einen gültigen Text ein. Leerzeichen allein sind nicht "
 "zulässig."
 
-#, fuzzy
 msgid "Please enter your email"
-msgstr "Bitte bestätigen"
+msgstr "Bitte geben Sie Ihre E-Mail-Adresse ein"
 
-#, fuzzy
 msgid "Please enter your first name"
-msgstr "Name des Alarms"
+msgstr "Bitte geben Sie Ihren Vornamen ein"
 
-#, fuzzy
 msgid "Please enter your last name"
-msgstr "Name des Alarms"
+msgstr "Bitte geben Sie Ihren Nachnamen ein"
 
-#, fuzzy
 msgid "Please enter your password"
-msgstr "Bitte bestätigen"
+msgstr "Bitte geben Sie Ihr Passwort ein"
 
-#, fuzzy
 msgid "Please enter your username"
-msgstr "Beschriftung für Ihre Anfrage"
+msgstr "Bitte geben Sie Ihren Usernamen ein"
 
 #, fuzzy, python-format
 msgid "Please fix the following errors"
@@ -15214,24 +15194,20 @@ msgstr "Benutzer*in muss einen Wert für diesen Filter auswählen"
 msgid "User query"
 msgstr "Benutzer*innen-Abfrage"
 
-#, fuzzy
 msgid "User registrations"
-msgstr "Verwenden von Flächenproportionen"
+msgstr "Benutzerregistrierungen"
 
 msgid "Username"
-msgstr "Benutzer*innenname"
+msgstr "Benutzername"
 
-#, fuzzy
 msgid "Username is required"
-msgstr "Name ist erforderlich"
+msgstr "Benutzername ist erforderlich"
 
-#, fuzzy
 msgid "Username:"
-msgstr "Benutzer*innenname"
+msgstr "Benutzername"
 
-#, fuzzy
 msgid "Users"
-msgstr "Zeitreihen"
+msgstr "Benutzer"
 
 msgid "Users are not allowed to set a search path for security reasons."
 msgstr ""
